@@ -11,6 +11,7 @@ OBJS = &
     alloc.obj &
     error.obj &
     main.obj &
+    vga.obj &
     xmalloc.obj &
     xmemcpy.obj
 

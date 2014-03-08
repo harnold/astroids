@@ -2,3 +2,4 @@ name    astroids.exe
 file    error.obj
 file    main.obj
 file    xmalloc.obj
+file    xmemcpy.obj

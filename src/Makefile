@@ -9,7 +9,8 @@ LFLAGS = system dos32x option map
 
 OBJS = &
     error.obj &
-    main.obj
+    main.obj &
+    xmalloc.obj
 
 .suffixes:
 .suffixes: .exe .obj .c .h

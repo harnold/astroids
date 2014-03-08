@@ -1,0 +1,94 @@
+
+
+                                ASTROIDS '96
+
+
+Introduction
+============
+
+        ASTROIDS is a minimalistic remake of the classic arcade video game
+        "Asteroids" by Atari.
+
+        In this game, you are a space pilot for Galactic Sweeping, Inc.,
+        the leading space cleaning company in the southern arm of the
+        galaxy.  Your mission is to clean your assigned space area from
+        as many asteroids as possible before finally getting destroyed.
+
+        (As you can probably imagine, since no pilot ever manages to make
+        it home and pick up his pay check, staff costs in this company are
+        relatively low.  On the other hand, increasing costs for replacement
+        space ships are a significant risk for the company's long-term
+        profitability.)
+
+        The standard cleaning ship is equipped with gravitonic deflector
+        shields and a (somewhat antique) Class III pulsed phase cannon.
+        Your shields are automatically activated when an asteroid hits your
+        ship, but every activation consumes energy.  When all your energy
+        is used up, then ...  well, you can imagine the consequences.
+        Strangely enough, whenever you reach a multiple of 10000 points,
+        your energy is fully recharged by some mysterious force.
+
+
+How to play
+===========
+
+        After starting ASTROIDS, you are first asked to enter your name;
+        then the title screen should appear.  By waiting for a few seconds,
+        you can take a look at the Hall of Fame.  To read your own name
+        there, press a key to start the game.
+
+        In the game, the small blue/red can that appears at the center of
+        the screen is your space ship.  The yellow bar in the top-left
+        corner displays your remaining shield energy, and the number in the
+        top-right corner displays your score.
+
+        Keyboard controls
+        -----------------
+
+        ESC                 Save score and exit game
+        P                   Pause, continue with SPACE
+        SPACE               Fire
+        Left arrow          Turn left
+        Right arrow         Turn right
+        Up arrow            Accelerate
+
+
+System requirements
+===================
+
+        ASTROIDS runs under DOS and Windows 9x.  If you have a more recent
+        system, you can run the game in a virtual machine using FreeDOS or
+        use a DOS emulator such as DOSBox or DOSEMU.
+
+
+Production Notes / Credits
+==========================
+
+        The following tools were used to produce ASTROIDS:
+
+        Compiler: Watcom C/C++ 10.6, OpenWatcom 1.9
+        3d modeling and rendering: Reflections 3d
+        2d image editing: Corel Photo-Paint, GIMP
+
+        The title screen of the game is based on a stunning photograph of
+        the Cone Nebula (NCG 2264) created by David Malin at the Australian
+        Astronomical Observatory.  Many thanks to David Malin for kindly
+        giving permission to include his work in the game.
+
+        The background of the game screen is based on a photograph of the
+        spiral galaxy NGC 5457 created by Anttler at en.wikipedia.org.
+
+
+Home page
+=========
+
+        You can download ASTROIDS at
+
+            http://harnold.org/software/
+
+
+License
+=======
+
+        ASTROIDS may be modified and redistributed under the conditions
+        specified in the accompanying LICENSE file.

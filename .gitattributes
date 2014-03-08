@@ -1,0 +1,8 @@
+*           text=auto
+*.c         text
+*.h         text
+*.asm       text
+*.inc       text
+*.lnk       text
+Makefile    text
+*.pcx       binary

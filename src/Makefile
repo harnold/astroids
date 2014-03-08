@@ -11,7 +11,10 @@ OBJS = &
     alloc.obj &
     dpmi.obj &
     error.obj &
+    image.obj &
     main.obj &
+    palette.obj &
+    pcx.obj &
     timer.obj &
     vga.obj &
     xmalloc.obj &

@@ -12,6 +12,7 @@ OBJS = &
     dpmi.obj &
     error.obj &
     main.obj &
+    timer.obj &
     vga.obj &
     xmalloc.obj &
     xmemcpy.obj

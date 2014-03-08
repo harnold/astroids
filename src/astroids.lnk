@@ -3,6 +3,7 @@ file    alloc.obj
 file    dpmi.obj
 file    error.obj
 file    main.obj
+file    timer.obj
 file    vga.obj
 file    xmalloc.obj
 file    xmemcpy.obj

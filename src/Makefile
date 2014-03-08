@@ -7,7 +7,9 @@ CP = cp -u
 CFLAGS = -bt=dos -za99 -6r -mf -oahkl+tx -fo=$^*.obj
 LFLAGS = system dos32x option map
 
-OBJS =	main.obj
+OBJS = &
+    error.obj &
+    main.obj
 
 .suffixes:
 .suffixes: .exe .obj .c .h

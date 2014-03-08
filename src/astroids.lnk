@@ -1,4 +1,5 @@
 name    astroids.exe
+file    alloc.obj
 file    error.obj
 file    main.obj
 file    xmalloc.obj

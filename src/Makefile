@@ -8,6 +8,7 @@ CFLAGS = -bt=dos -za99 -6r -mf -oahkl+tx -fo=$^*.obj
 LFLAGS = system dos32x option map
 
 OBJS = &
+    alloc.obj &
     error.obj &
     main.obj &
     xmalloc.obj &

@@ -16,6 +16,7 @@ OBJS = &
     main.obj &
     palette.obj &
     pcx.obj &
+    res.obj &
     scene.obj &
     sprite.obj &
     timer.obj &

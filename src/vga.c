@@ -1,4 +1,5 @@
 #include "vga.h"
+#include "dpmi.h"
 #include "palette.h"
 
 #include <conio.h>
@@ -10,6 +11,7 @@
 #define VGA_DAC_WRITE_ADDRESS   0x3C8
 #define VGA_DAC_DATA            0x3C9
 #define VGA_INPUT_STATUS_1      0x3DA
+#define VGA_VIDEO_BUFFER_SEG    0xA000
 
 void vga_get_mode(int *mode)
 {
@@ -64,6 +66,11 @@ void vga_set_palette_data(int start, int count, const uint8_t *data)
 void vga_set_palette(struct palette *pal)
 {
     vga_set_palette_data(0, VGA_NUM_COLORS, pal->data);
+}
+
+uint8_t *vga_video_buffer(void)
+{
+    return dpmi_ptr_to_rm_segment(VGA_VIDEO_BUFFER_SEG);
 }
 
 void vga_wait_for_retrace(void)

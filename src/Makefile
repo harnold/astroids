@@ -16,6 +16,7 @@ OBJS = &
     main.obj &
     palette.obj &
     pcx.obj &
+    sprite.obj &
     timer.obj &
     vga.obj &
     xmalloc.obj &

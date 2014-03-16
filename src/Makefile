@@ -11,6 +11,7 @@ OBJS = &
     alloc.obj &
     dpmi.obj &
     error.obj &
+    gfx.obj &
     image.obj &
     main.obj &
     palette.obj &

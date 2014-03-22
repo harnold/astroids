@@ -13,6 +13,7 @@ OBJS = &
     error.obj &
     gfx.obj &
     image.obj &
+    keyb.obj &
     main.obj &
     palette.obj &
     pcx.obj &

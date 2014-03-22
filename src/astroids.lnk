@@ -4,6 +4,7 @@ file    dpmi.obj
 file    error.obj
 file    gfx.obj
 file    image.obj
+file    keyb.obj
 file    main.obj
 file    palette.obj
 file    pcx.obj

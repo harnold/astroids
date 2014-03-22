@@ -36,8 +36,8 @@ static struct {
 
 static void __interrupt key_handler(union INTPACK regs)
 {
-    int key_code;
-    int key_control;
+    unsigned key_code;
+    unsigned key_control;
 
     key_code = inp(KEY_BUFFER);
     key_control = inp(KEY_CONTROL);

@@ -20,7 +20,7 @@ struct gfx_mode_info {
     unsigned vsync_supported:1;
 };
 
-void gfx_init(int mode);
+void gfx_init(void);
 void gfx_exit(void);
 void gfx_get_mode_info(struct gfx_mode_info *info);
 void gfx_get_clip_rect(int *x, int *y, int *w, int *h);

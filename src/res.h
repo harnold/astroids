@@ -6,9 +6,9 @@
 
 extern struct palette game_palette;
 extern struct image background_image;
-extern struct image astroid_big_image;
-extern struct image astroid_mid_image;
-extern struct image astroid_small_image;
+extern struct image asteroid_big_image;
+extern struct image asteroid_mid_image;
+extern struct image asteroid_small_image;
 extern struct image explosion_image;
 extern struct image font_image;
 extern struct image game_over_image;

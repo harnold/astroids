@@ -5,9 +5,9 @@
 
 struct palette game_palette;
 struct image background_image;
-struct image astroid_big_image;
-struct image astroid_mid_image;
-struct image astroid_small_image;
+struct image asteroid_big_image;
+struct image asteroid_mid_image;
+struct image asteroid_small_image;
 struct image explosion_image;
 struct image font_image;
 struct image game_over_image;
@@ -35,9 +35,9 @@ static const struct palette_info palette_infos[] = {
 
 static const struct image_info image_infos[] = {
     &background_image, "gfx\\backgrnd.pcx",
-    &astroid_big_image, "gfx\\astbig.pcx",
-    &astroid_mid_image, "gfx\\astmid.pcx",
-    &astroid_small_image, "gfx\\astsmall.pcx",
+    &asteroid_big_image, "gfx\\astbig.pcx",
+    &asteroid_mid_image, "gfx\\astmid.pcx",
+    &asteroid_small_image, "gfx\\astsmall.pcx",
     &explosion_image, "gfx\\explode.pcx",
     &font_image, "gfx\\font.pcx",
     &game_over_image, "gfx\\gameover.pcx",

@@ -12,8 +12,8 @@
 #define SCORE_LAYER             0
 
 #define SCORE_DIGITS            6
-#define SCORE_X_POS             3500
-#define SCORE_Y_POS             10
+#define SCORE_X_POS             3200
+#define SCORE_Y_POS             50
 
 struct gfx_mode_info gfx_mode_info;
 
@@ -45,14 +45,15 @@ static void game_start(void)
 {
     game.score = 0;
 
+    init_scene(&game.scene);
+
     for (int i = 0; i < SCORE_DIGITS; i++) {
         init_sprite(&game.score_sprites[i], &font_class,
                     world_to_screen_x(SCORE_X_POS) + i * font_class.width,
                     world_to_screen_y(SCORE_Y_POS),
                     SCORE_LAYER, 0.0f);
+        scene_add_sprite(&game.scene, &game.score_sprites[i]);
     }
-
-    init_scene(&game.scene);
 }
 
 static void game_end(void)

@@ -3,6 +3,7 @@ file    alloc.obj
 file    asteroid.obj
 file    dpmi.obj
 file    error.obj
+file    game.obj
 file    gfx.obj
 file    image.obj
 file    keyb.obj

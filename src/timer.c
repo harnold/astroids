@@ -21,7 +21,7 @@
 
 typedef void __interrupt (*timer_handler_t)();
 
-static timer_initialized;
+static bool timer_initialized;
 
 static struct {
     timer_handler_t default_handler;

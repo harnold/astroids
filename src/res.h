@@ -4,6 +4,7 @@
 #include "image.h"
 #include "palette.h"
 
+extern struct palette title_palette;
 extern struct palette game_palette;
 extern struct image background_image;
 extern struct image asteroid_big_image;

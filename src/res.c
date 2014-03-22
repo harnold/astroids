@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+struct palette title_palette;
 struct palette game_palette;
 struct image background_image;
 struct image asteroid_big_image;
@@ -29,7 +30,8 @@ struct image_info {
 };
 
 static const struct palette_info palette_infos[] = {
-    &game_palette, "gfx\\title.pcx",
+    &title_palette, "gfx\\title.pcx",
+    &game_palette, "gfx\\ship.pcx",
     NULL, NULL
 };
 

@@ -16,7 +16,7 @@ static inline void vbitvect_clear_bit(volatile uint8_t *v, unsigned bit)
 
 static inline bool vbitvect_test_bit(volatile uint8_t *v, unsigned bit)
 {
-    return *(v + bit / 8) & (1 << (bit % 8)) != 0;
+    return (*(v + bit / 8) & (1 << (bit % 8))) != 0;
 }
 
 #endif

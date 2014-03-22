@@ -6,6 +6,7 @@
 #include "sprite.h"
 #include "timer.h"
 #include "vga.h"
+#include "xmemcpy.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -63,6 +64,8 @@ void gfx_init()
                gfx_mode_info.x_resolution,
                gfx_mode_info.y_resolution,
                NULL);
+
+    xmemset(gfx_back_buffer.data, 0, gfx_mode_info.page_size);
 
     gfx_check_refresh_rate();
     gfx_reset_clip_rect();

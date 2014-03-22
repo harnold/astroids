@@ -73,6 +73,7 @@ void gfx_init()
 
 void gfx_exit(void)
 {
+    destroy_image(&gfx_back_buffer);
     vga_set_mode(gfx_saved_vga_mode);
 }
 

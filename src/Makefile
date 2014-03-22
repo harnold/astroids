@@ -9,6 +9,7 @@ LFLAGS = system dos32x option map
 
 OBJS = &
     alloc.obj &
+    asteroid.obj &
     dpmi.obj &
     error.obj &
     gfx.obj &

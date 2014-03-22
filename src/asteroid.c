@@ -3,6 +3,8 @@
 #include "sprite.h"
 #include "world.h"
 
+DEFINE_ALLOCATOR(asteroid, struct asteroid, ALLOC_DEFAULT_BLOB_SIZE);
+
 const struct animation asteroid_animations[] = {
     { ANIM_ROTATE_FORWARD, 60, 0, 19 },
     { ANIM_ROTATE_FORWARD, 60, 0, 19 },

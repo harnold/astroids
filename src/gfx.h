@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 enum gfx_flags {
     GFX_NO_CLIPPING = 1 << 16
@@ -29,6 +30,7 @@ void gfx_set_clip_rect(int x, int y, int w, int h);
 void gfx_reset_clip_rect(void);
 bool gfx_clip(int *x, int *y, int *w, int *h);
 void gfx_draw_back_buffer(void);
+void gfx_draw_rect(int x, int y, int w, int h, uint8_t c, unsigned flags);
 void gfx_draw_image_section(const struct image *image, int src_x, int src_y,
                             int src_w, int src_h, int dst_x, int dst_y,
                             unsigned flags);

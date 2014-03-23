@@ -158,6 +158,21 @@ void gfx_draw_back_buffer(void)
                IMAGE_BLIT_COPY);
 }
 
+void gfx_draw_rect(int x, int y, int w, int h, uint8_t c, unsigned flags)
+{
+    if (!test_bit(flags, GFX_NO_CLIPPING)) {
+        if (!gfx_clip(&x, &y, &w, &h))
+            return;
+    }
+
+    uint8_t *p = gfx.back_buffer.data + y * gfx.back_buffer.width + x;
+
+    for (int i = 0; i < h; i++) {
+        xmemset(p, c, w);
+        p += gfx.back_buffer.width;
+    }
+}
+
 void gfx_draw_image_section(const struct image *image, int src_x, int src_y,
                             int src_w, int src_h, int dst_x, int dst_y,
                             unsigned flags)

@@ -23,6 +23,7 @@ void vga_set_color(int index, rgb_t rgb);
 void vga_get_color(int index, rgb_t *rgb);
 void vga_set_palette_data(int start, int count, const uint8_t *data);
 void vga_set_palette(struct palette *pal);
+void vga_set_black_palette(void);
 uint8_t *vga_video_buffer(void);
 void vga_wait_for_retrace(void);
 

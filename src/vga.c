@@ -84,6 +84,16 @@ void vga_set_palette(struct palette *pal)
     vga_set_palette_data(0, VGA_NUM_COLORS, pal->data);
 }
 
+void vga_set_black_palette(void)
+{
+    outp(VGA_DAC_WRITE_ADDRESS, 0);
+    for (int i = 0; i < VGA_NUM_COLORS; i++) {
+        outp(VGA_DAC_DATA, 0);
+        outp(VGA_DAC_DATA, 0);
+        outp(VGA_DAC_DATA, 0);
+    }
+}
+
 uint8_t *vga_video_buffer(void)
 {
     return dpmi_ptr_to_rm_segment(VGA_VIDEO_BUFFER_SEG);

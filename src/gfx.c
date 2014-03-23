@@ -66,6 +66,9 @@ void gfx_init()
                gfx.mode_info.y_resolution,
                NULL);
 
+    vga_wait_for_retrace();
+    vga_set_black_palette();
+    xmemset(gfx.front_buffer.data, 0, gfx.mode_info.page_size);
     xmemset(gfx.back_buffer.data, 0, gfx.mode_info.page_size);
 
     gfx_check_refresh_rate();
@@ -75,6 +78,10 @@ void gfx_init()
 void gfx_exit(void)
 {
     destroy_image(&gfx.back_buffer);
+
+    vga_wait_for_retrace();
+    vga_set_black_palette();
+    xmemset(gfx.front_buffer.data, 0, gfx.mode_info.page_size);
     vga_set_mode(gfx.saved_vga_mode);
 }
 

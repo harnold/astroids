@@ -42,7 +42,7 @@ void vga_set_color(int index, rgb_t rgb)
 
 void vga_get_color(int index, rgb_t *rgb)
 {
-    unsigned int r, g, b;
+    uint8_t r, g, b;
 
     outp(VGA_DAC_READ_ADDRESS, index);
     r = inp(VGA_DAC_DATA);

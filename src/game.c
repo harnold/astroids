@@ -10,10 +10,32 @@
 #include "world.h"
 
 #define SCORE_LAYER             0
+#define SHIP_LAYER              1
+#define ASTEROIDS_LAYER         2
+
+#define ENERGY_COLOR            253
+#define ENERGY_X_POS            50
+#define ENERGY_Y_POS            50
+#define ENERGY_WIDTH            800
+#define ENERGY_HEIGHT           80
 
 #define SCORE_DIGITS            6
-#define SCORE_X_POS             3200
+#define SCORE_X_POS             3350
 #define SCORE_Y_POS             50
+
+#define ASTEROIDS_MAX           50
+
+#define PLAYER_NAME_MAX         16
+
+struct ship {
+    float energy;
+    float x;
+    float y;
+    float v;
+    float dir;
+    struct sprite ship_sprite;
+    struct sprite shield_sprite;
+};
 
 struct gfx_mode_info gfx_mode_info;
 
@@ -22,9 +44,14 @@ static const struct sprite_class font_class = {
 };
 
 static struct {
+    char name[PLAYER_NAME_MAX];
     unsigned int score;
-    struct sprite score_sprites[SCORE_DIGITS];
+    unsigned int level;
     struct scene scene;
+    struct ship player_ship;
+    struct elist asteroids;
+    unsigned int num_asteroids;
+    struct sprite score_sprites[SCORE_DIGITS];
 } game;
 
 static int frame_of_char(char c)
@@ -41,11 +68,38 @@ static void update_number_display(struct sprite sprites[], int num_digits,
         sprites[i].frame = frame_of_char('0' + (value / shifter) % 10);
 }
 
+static void update_energy_display(void)
+{
+    unsigned x = world_to_screen_x(ENERGY_X_POS);
+    unsigned y = world_to_screen_y(ENERGY_Y_POS);
+    unsigned w = world_to_screen_dx(game.player_ship.energy * ENERGY_WIDTH);
+    unsigned h = world_to_screen_dx(ENERGY_HEIGHT);
+
+    gfx_draw_rect(x, y, w, h, ENERGY_COLOR, GFX_NO_CLIPPING);
+}
+
+static void create_asteroids(void)
+{
+    if (game.num_asteroids >= ASTEROIDS_MAX)
+        return;
+}
+
+static void update_asteroids(void)
+{
+}
+
 static void game_start(void)
 {
     game.score = 0;
+    game.level = 1;
+
+    game.player_ship.energy = 1.0f;
+
+    game.num_asteroids = 0;
+    init_elist(&game.asteroids);
 
     init_scene(&game.scene);
+    scene_set_background(&game.scene, &background_image);
 
     for (int i = 0; i < SCORE_DIGITS; i++) {
         init_sprite(&game.score_sprites[i], &font_class,
@@ -54,10 +108,19 @@ static void game_start(void)
                     SCORE_LAYER, 0.0f);
         scene_add_sprite(&game.scene, &game.score_sprites[i]);
     }
+
+    vga_set_black_palette();
+    scene_draw(&game.scene);
+
+    update_energy_display();
+
+    gfx_draw_back_buffer();
+    gfx_fade_in(&game_palette);
 }
 
 static void game_end(void)
 {
+    gfx_fade_out();
     destroy_scene(&game.scene);
 }
 
@@ -95,7 +158,6 @@ int game_init(void)
     }
 
     gfx_get_mode_info(&gfx_mode_info);
-    vga_set_palette(&game_palette);
 
     return 0;
 }

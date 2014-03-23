@@ -184,8 +184,8 @@ void *xmemset(void *ptr, int c, size_t n)
         *p++ = b;
 
     uint32_t dw_b = b;
-    dw_b &= (dw_b << 8);
-    dw_b &= (dw_b << 16);
+    dw_b |= (dw_b << 8);
+    dw_b |= (dw_b << 16);
 
     uint32_t *dw_p = (uint32_t *) p;
 

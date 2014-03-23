@@ -32,6 +32,22 @@ void vga_set_mode(int mode)
     int386(VGA_INT, &regs, &regs);
 }
 
+void vga_set_rgb(int index, uint8_t r, uint8_t g, uint8_t b)
+{
+    outp(VGA_DAC_WRITE_ADDRESS, index);
+    outp(VGA_DAC_DATA, r);
+    outp(VGA_DAC_DATA, g);
+    outp(VGA_DAC_DATA, b);
+}
+
+void vga_get_rgb(int index, uint8_t *r, uint8_t *g, uint8_t *b)
+{
+    outp(VGA_DAC_READ_ADDRESS, index);
+    *r = inp(VGA_DAC_DATA);
+    *g = inp(VGA_DAC_DATA);
+    *b = inp(VGA_DAC_DATA);
+}
+
 void vga_set_color(int index, rgb_t rgb)
 {
     outp(VGA_DAC_WRITE_ADDRESS, index);

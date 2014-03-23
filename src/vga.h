@@ -17,6 +17,8 @@ struct palette;
 
 void vga_get_mode(int *mode);
 void vga_set_mode(int mode);
+void vga_set_rgb(int index, uint8_t r, uint8_t g, uint8_t b);
+void vga_get_rgb(int index, uint8_t *r, uint8_t *g, uint8_t *b);
 void vga_set_color(int index, rgb_t rgb);
 void vga_get_color(int index, rgb_t *rgb);
 void vga_set_palette_data(int start, int count, const uint8_t *data);

@@ -27,7 +27,7 @@ void *xmemcpy(void *restrict dst, const void *restrict src, size_t n)
 
     if (shift == 0) {
 
-        size_t n1 = (4 - alignment(dp)) & 3;
+        size_t n1 = 4 - alignment(dp);
         n -= n1;
 
         while (n1-- > 0)
@@ -111,7 +111,7 @@ void *xmemmove(void *dst, const void *src, size_t n)
         if (n < DWORD_COPY_THRESHOLD || alignment(sp) != alignment(dp))
             goto forward_byte_copy;
 
-        size_t n1 = (4 - (uintptr_t) sp) & 3;
+        size_t n1 = 4 - alignment(dp);
         n -= n1;
 
         while (n1-- > 0)
@@ -142,7 +142,7 @@ void *xmemmove(void *dst, const void *src, size_t n)
         if (n < DWORD_COPY_THRESHOLD || alignment(sp) != alignment(dp))
             goto backward_byte_copy;
 
-        size_t n1 = (uintptr_t) sp & 3;
+        size_t n1 = alignment(dp);
         n -= n1;
 
         while (n1-- > 0)
@@ -177,7 +177,7 @@ void *xmemset(void *ptr, int c, size_t n)
     if (n < DWORD_COPY_THRESHOLD)
         goto byte_memset;
 
-    size_t n1 = (4 - (uintptr_t) p) & 3;
+    size_t n1 = 4 - alignment(p);
     n -= n1;
 
     while (n1-- > 0)

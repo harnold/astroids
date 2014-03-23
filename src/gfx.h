@@ -9,6 +9,7 @@ enum gfx_flags {
 };
 
 struct image;
+struct palette;
 struct sprite;
 
 struct gfx_mode_info {
@@ -34,5 +35,7 @@ void gfx_draw_image_section(const struct image *image, int src_x, int src_y,
 void gfx_draw_image(const struct image *image, int x, int y, unsigned flags);
 void gfx_draw_sprite(const struct sprite *sprite, unsigned flags);
 bool gfx_sprite_visible(const struct sprite *sprite);
+void gfx_fade_out(void);
+void gfx_fade_in(const struct palette *pal);
 
 #endif

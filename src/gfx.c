@@ -3,6 +3,7 @@
 #include "dpmi.h"
 #include "error.h"
 #include "image.h"
+#include "palette.h"
 #include "sprite.h"
 #include "timer.h"
 #include "vga.h"
@@ -206,4 +207,60 @@ bool gfx_sprite_visible(const struct sprite *sprite)
 
     return (xs <= clip_xe && xe >= gfx.clip_x &&
             ys <= clip_ye && ye >= gfx.clip_y);
+}
+
+void gfx_fade_out(void)
+{
+    for (int level = 0; level < VGA_NUM_COLOR_LEVELS; level++) {
+
+        vga_wait_for_retrace();
+
+        for (int i = 0; i < VGA_NUM_COLORS; i++) {
+
+            rgb_t c;
+            vga_get_color(i, &c);
+
+            uint8_t r = rgb_r(c);
+            uint8_t g = rgb_g(c);
+            uint8_t b = rgb_b(c);
+
+            if (r > 0)
+                r--;
+            if (g > 0)
+                g--;
+            if (b > 0)
+                b--;
+
+            vga_set_color(i, make_rgb(r, g, b));
+        }
+    }
+}
+
+void gfx_fade_in(const struct palette *pal)
+{
+    for (int level = 0; level < VGA_NUM_COLOR_LEVELS; level++) {
+
+        vga_wait_for_retrace();
+
+        const uint8_t *p = pal->data;
+
+        for (int i = 0; i < VGA_NUM_COLORS; i++) {
+
+            rgb_t c;
+            vga_get_color(i, &c);
+
+            uint8_t r = rgb_r(c);
+            uint8_t g = rgb_g(c);
+            uint8_t b = rgb_b(c);
+
+            if (r < *p++)
+                r++;
+            if (g < *p++)
+                g++;
+            if (b < *p++)
+                b++;
+
+            vga_set_color(i, make_rgb(r, g, b));
+        }
+    }
 }

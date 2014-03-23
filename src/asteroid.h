@@ -21,10 +21,10 @@ enum asteroid_type {
 
 struct asteroid {
     enum asteroid_type type;
-    float world_x;
-    float world_y;
-    float world_vx;
-    float world_vy;
+    float x;
+    float y;
+    float v;
+    float dir;
     struct sprite *sprite;
     struct elist_node link;
 };
@@ -38,10 +38,10 @@ DECLARE_ALLOCATOR(asteroid, struct asteroid);
     elist_get(__node, struct asteroid, link)
 
 void init_asteroid(struct asteroid *ast, enum asteroid_type type,
-                   float x, float y, float vx, float vy, int z, float time);
+                   float x, float y, float v, float dir, int z, float time);
 void destroy_asteroid(struct asteroid *ast);
 struct asteroid *create_asteroid(enum asteroid_type type, float x, float y,
-                                 float vx, float vy, int z, float time);
+                                 float v, float dir, int z, float time);
 void delete_asteroid(struct asteroid *ast);
 void asteroid_set_type(struct asteroid *ast, enum asteroid_type type, float time);
 void asteroid_cleanup(void);

@@ -3,6 +3,7 @@
 
 #include "alloc.h"
 #include "elist.h"
+#include "sprite.h"
 
 #include <stdbool.h>
 
@@ -25,7 +26,7 @@ struct asteroid {
     float y;
     float v;
     float dir;
-    struct sprite *sprite;
+    struct sprite sprite;
     struct elist_node link;
 };
 

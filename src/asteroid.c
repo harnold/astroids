@@ -1,6 +1,5 @@
 #include "asteroid.h"
 #include "res.h"
-#include "sprite.h"
 #include "world.h"
 
 DEFINE_ALLOCATOR(asteroid, struct asteroid, ALLOC_DEFAULT_BLOB_SIZE);
@@ -26,20 +25,18 @@ void init_asteroid(struct asteroid *ast, enum asteroid_type type,
     ast->v = v;
     ast->dir = dir;
 
-    struct sprite *spr = create_sprite(&asteroid_classes[type],
-                                       world_to_screen_x(x),
-                                       world_to_screen_y(y), z, 0);
+    init_sprite(&ast->sprite, &asteroid_classes[type],
+                world_to_screen_x(x),
+                world_to_screen_y(y), z, 0);
 
-    sprite_set_animation(spr, &asteroid_animations[type], time);
+    sprite_set_animation(&ast->sprite, &asteroid_animations[type], time);
 
-    ast->sprite = spr;
     elist_link(&ast->link, &ast->link);
 }
 
 void destroy_asteroid(struct asteroid *ast)
 {
     elist_remove(&ast->link);
-    delete_sprite(ast->sprite);
 }
 
 struct asteroid *create_asteroid(enum asteroid_type type, float x, float y,
@@ -60,8 +57,8 @@ void asteroid_set_type(struct asteroid *ast, enum asteroid_type type, float time
 {
     ast->type = type;
     const struct sprite_class *class = &asteroid_classes[type];
-    *((struct sprite_class *) ast->sprite) = *class;
-    sprite_set_animation(ast->sprite, &asteroid_animations[type], time);
+    *((struct sprite_class *) &ast->sprite) = *class;
+    sprite_set_animation(&ast->sprite, &asteroid_animations[type], time);
 }
 
 void asteroid_cleanup(void)

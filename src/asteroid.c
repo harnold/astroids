@@ -4,10 +4,16 @@
 
 DEFINE_ALLOCATOR(asteroid, struct asteroid, ALLOC_DEFAULT_BLOB_SIZE);
 
+#define ASTEROID_FORWARD    0
+#define ASTEROID_BACKWARD   (SMALL_ASTEROID + 1)
+
 const struct animation asteroid_animations[] = {
-    { ANIM_ROTATE_FORWARD, 60, 0, 19 },
-    { ANIM_ROTATE_FORWARD, 60, 0, 19 },
-    { ANIM_ROTATE_FORWARD, 60, 0, 19 },
+    { ANIM_ROTATE_FORWARD, 20, 0, 19 },
+    { ANIM_ROTATE_FORWARD, 20, 0, 19 },
+    { ANIM_ROTATE_FORWARD, 20, 0, 19 },
+    { ANIM_ROTATE_BACKWARD, 20, 19, 0 },
+    { ANIM_ROTATE_BACKWARD, 20, 19, 0 },
+    { ANIM_ROTATE_BACKWARD, 20, 19, 0 },
 };
 
 const struct sprite_class asteroid_classes[] = {
@@ -29,8 +35,15 @@ void init_asteroid(struct asteroid *ast, enum asteroid_type type,
                 world_to_screen_x(x),
                 world_to_screen_y(y), z, 0);
 
-    sprite_set_animation(&ast->sprite, &asteroid_animations[type], time);
+    const struct animation *anim;
 
+    if (vy > 0) {
+        anim = &asteroid_animations[ASTEROID_FORWARD + type];
+    } else {
+        anim = &asteroid_animations[ASTEROID_BACKWARD + type];
+    }
+
+    sprite_set_animation(&ast->sprite, anim, time);
     elist_link(&ast->link, &ast->link);
 }
 

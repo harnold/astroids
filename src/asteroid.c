@@ -17,13 +17,13 @@ const struct sprite_class asteroid_classes[] = {
 };
 
 void init_asteroid(struct asteroid *ast, enum asteroid_type type,
-                   float x, float y, float v, float dir, int z, float time)
+                   float x, float y, float vx, float vy, int z, float time)
 {
     ast->type = type;
     ast->x = x;
     ast->y = y;
-    ast->v = v;
-    ast->dir = dir;
+    ast->vx = vx;
+    ast->vy = vy;
 
     init_sprite(&ast->sprite, &asteroid_classes[type],
                 world_to_screen_x(x),
@@ -40,10 +40,10 @@ void destroy_asteroid(struct asteroid *ast)
 }
 
 struct asteroid *create_asteroid(enum asteroid_type type, float x, float y,
-                                 float v, float dir, int z, float time)
+                                 float vx, float vy, int z, float time)
 {
     struct asteroid *ast = alloc_asteroid();
-    init_asteroid(ast, type, x, y, v, dir, z, time);
+    init_asteroid(ast, type, x, y, vx, vy, z, time);
     return ast;
 }
 

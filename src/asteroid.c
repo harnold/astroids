@@ -37,6 +37,7 @@ void init_asteroid(struct asteroid *ast, enum asteroid_type type,
 void destroy_asteroid(struct asteroid *ast)
 {
     elist_remove(&ast->link);
+    destroy_sprite(&ast->sprite);
 }
 
 struct asteroid *create_asteroid(enum asteroid_type type, float x, float y,

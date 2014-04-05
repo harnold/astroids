@@ -20,6 +20,8 @@ static inline char *stpcpy(char *dst, const char *src)
 
 static inline float frand(void) { return (float) rand() / RAND_MAX; }
 
+#define FLOAT_2PI                       (4 * asin(1.0f))
+
 #ifndef __unique_identifier
 
 #define __concat1(a, b)                 a##b

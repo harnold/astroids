@@ -1,5 +1,6 @@
 #include "game.h"
 #include "asteroid.h"
+#include "compat.h"
 #include "gfx.h"
 #include "keyb.h"
 #include "res.h"
@@ -8,6 +9,8 @@
 #include "timer.h"
 #include "vga.h"
 #include "world.h"
+
+#include <math.h>
 
 #define SCORE_LAYER             0
 #define SHIP_LAYER              1
@@ -24,8 +27,12 @@
 #define SCORE_Y_POS             50
 
 #define ASTEROIDS_MAX           50
+#define ASTEROID_MIN_SPEED      200
+#define ASTEROID_MAX_SPEED      3000
 
 #define PLAYER_NAME_MAX         16
+
+#define TIME_PER_LEVEL          10
 
 struct ship {
     float energy;
@@ -78,14 +85,77 @@ static void update_energy_display(void)
     gfx_draw_rect(x, y, w, h, ENERGY_COLOR, GFX_NO_CLIPPING);
 }
 
-static void create_asteroids(void)
+static void create_asteroids(float time)
 {
     if (game.num_asteroids >= ASTEROIDS_MAX)
         return;
+
+    if (game.num_asteroids >= game.level)
+        return;
+
+    float d = frand() * FLOAT_2PI;
+    float v = ASTEROID_MIN_SPEED + frand() * (ASTEROID_MAX_SPEED - ASTEROID_MIN_SPEED);
+    float vx = v * sin(d);
+    float vy = v * cos(d);
+
+    float x;
+    float y;
+
+    if (vy > 0) {
+        y = WORLD_MIN_Y -
+            screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2);
+    } else {
+        y = WORLD_MAX_Y +
+            screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2);
+    }
+
+    if (vx > 0) {
+        x = WORLD_MIN_X + frand() * WORLD_SIZE_X / 2;
+    } else {
+        x = WORLD_MAX_X - frand() * WORLD_SIZE_X / 2;
+    }
+
+    struct asteroid *ast = create_asteroid(BIG_ASTEROID, x, y, vx, vy,
+                                           ASTEROIDS_LAYER, time);
+
+    elist_insert_back(&ast->link, &game.asteroids);
+    scene_add_sprite(&game.scene, &ast->sprite);
+    ++game.num_asteroids;
 }
 
-static void update_asteroids(void)
+static void update_asteroids(float dt)
 {
+    struct elist_node *node, *tmp;
+
+    elist_for_each_node_safe(node, tmp, &game.asteroids) {
+
+        struct asteroid *ast = asteroid_list_get(node);
+
+        ast->x += dt * ast->vx;
+        ast->y += dt * ast->vy;
+
+        ast->sprite.x = world_to_screen_x(ast->x);
+        ast->sprite.y = world_to_screen_y(ast->y);
+
+        if ((ast->x < WORLD_MIN_X && ast->vx < 0) ||
+            (ast->x > WORLD_MAX_X && ast->vx > 0) ||
+            (ast->y < WORLD_MIN_Y && ast->vy < 0) ||
+            (ast->y > WORLD_MAX_Y && ast->vy > 0)) {
+
+            if (!gfx_sprite_visible(&ast->sprite)) {
+                delete_asteroid(ast);
+                --game.num_asteroids;
+            }
+        }
+    }
+}
+
+static void delete_asteroids(void)
+{
+    struct elist_node *node, *tmp;
+
+    elist_for_each_node_safe(node, tmp, &game.asteroids)
+        delete_asteroid(asteroid_list_get(node));
 }
 
 static void game_start(void)
@@ -121,6 +191,7 @@ static void game_start(void)
 static void game_end(void)
 {
     gfx_fade_out();
+    delete_asteroids();
     destroy_scene(&game.scene);
 }
 
@@ -130,6 +201,7 @@ static unsigned int game_loop(void)
 
     const float start_time = timer_get_time();
     float time = start_time;
+    float level_time = 0;
 
     while (!quit) {
 
@@ -139,8 +211,19 @@ static unsigned int game_loop(void)
         float dt = timer_get_time_delta();
         time += dt;
 
+        level_time += dt;
+
+        if (level_time >= TIME_PER_LEVEL) {
+            ++game.level;
+            level_time = 0;
+        }
+
+        update_asteroids(dt);
+        create_asteroids(time);
+
         scene_update(&game.scene, time, dt);
         scene_draw(&game.scene);
+        update_energy_display();
         gfx_draw_back_buffer();
     }
 

@@ -30,6 +30,9 @@
 #define ASTEROID_MIN_SPEED      200
 #define ASTEROID_MAX_SPEED      3000
 
+#define SHIP_MIN_ENERGY         0.01f
+#define SHIP_MAX_ACCEL          100.0f
+
 #define PLAYER_NAME_MAX         16
 
 #define TIME_PER_LEVEL          10
@@ -153,13 +156,14 @@ static void game_start(void)
     game.score = 0;
     game.level = 1;
 
-    game.player_ship.energy = 1.0f;
+    init_scene(&game.scene);
+    scene_set_background(&game.scene, &background_image);
+
+    init_ship(&game.player_ship, WORLD_CENTER_X, WORLD_CENTER_Y, SHIP_LAYER);
+    scene_add_sprite(&game.scene, &game.player_ship.ship_sprite);
 
     game.num_asteroids = 0;
     init_elist(&game.asteroids);
-
-    init_scene(&game.scene);
-    scene_set_background(&game.scene, &background_image);
 
     for (int i = 0; i < SCORE_DIGITS; i++) {
         init_sprite(&game.score_sprites[i], &font_class,

@@ -21,6 +21,7 @@ OBJS = &
     pcx.obj &
     res.obj &
     scene.obj &
+    ship.obj &
     sprite.obj &
     timer.obj &
     vga.obj &

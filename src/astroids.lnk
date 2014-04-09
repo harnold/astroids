@@ -12,6 +12,7 @@ file    palette.obj
 file    pcx.obj
 file    res.obj
 file    scene.obj
+file    ship.obj
 file    sprite.obj
 file    timer.obj
 file    vga.obj

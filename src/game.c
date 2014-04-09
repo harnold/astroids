@@ -4,6 +4,7 @@
 #include "keyb.h"
 #include "res.h"
 #include "scene.h"
+#include "ship.h"
 #include "sprite.h"
 #include "timer.h"
 #include "vga.h"
@@ -32,16 +33,6 @@
 #define PLAYER_NAME_MAX         16
 
 #define TIME_PER_LEVEL          10
-
-struct ship {
-    float energy;
-    float x;
-    float y;
-    float v;
-    float dir;
-    struct sprite ship_sprite;
-    struct sprite shield_sprite;
-};
 
 struct gfx_mode_info gfx_mode_info;
 

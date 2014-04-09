@@ -1,7 +1,6 @@
 #include "game.h"
 #include "asteroid.h"
 #include "compat.h"
-#include "gfx.h"
 #include "keyb.h"
 #include "res.h"
 #include "scene.h"

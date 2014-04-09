@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include "gfx.h"
+#include "game.h"
 
 #define WORLD_MIN_X     0.0f
 #define WORLD_MAX_X     4000.0f
@@ -9,8 +10,6 @@
 #define WORLD_MAX_Y     3000.0f
 #define WORLD_SIZE_X    (WORLD_MAX_X - WORLD_MIN_X)
 #define WORLD_SIZE_Y    (WORLD_MAX_Y - WORLD_MIN_Y)
-
-extern struct gfx_mode_info gfx_mode_info;
 
 static inline int world_to_screen_x(float x);
 static inline int world_to_screen_dx(float dx);

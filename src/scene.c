@@ -72,6 +72,12 @@ void scene_add_sprite(struct scene *scene, struct sprite *sprite)
     elist_insert(&sprite->link, node);
 }
 
+void scene_insert_sprite(struct scene *scene, struct sprite *prev,
+                         struct sprite *sprite)
+{
+    elist_insert(&sprite->link, prev->link.next);
+}
+
 void scene_remove_sprite(struct scene *scene, struct sprite *sprite)
 {
     elist_remove(&sprite->link);

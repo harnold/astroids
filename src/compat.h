@@ -20,6 +20,11 @@ static inline char *stpcpy(char *dst, const char *src)
 
 static inline float frand(void) { return (float) rand() / RAND_MAX; }
 
+static inline float confine_float(float x, float min, float max)
+{
+    return (x < min) ? min : (x > max) ? max : x;
+}
+
 #define FLOAT_2PI                       (4 * asin(1.0f))
 
 #ifndef __unique_identifier

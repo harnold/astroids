@@ -15,7 +15,8 @@ struct ship {
     float energy;
     float x;
     float y;
-    float v;
+    float vx;
+    float vy;
     float dir;
     float engine_power;
     struct sprite ship_sprite;
@@ -26,5 +27,7 @@ void init_ship(struct ship *ship, float x, float y, int z);
 void destroy_ship(struct ship *ship);
 void ship_set_direction(struct ship *ship, float dir);
 void ship_turn(struct ship *ship, float r);
+void ship_set_power(struct ship *ship, float power);
+void ship_update(struct ship *ship, float dt);
 
 #endif

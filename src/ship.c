@@ -22,7 +22,8 @@ void init_ship(struct ship *ship, float x, float y, int z)
     ship->energy = 1.0f;
     ship->x = x;
     ship->y = y;
-    ship->v = 0;
+    ship->vx = 0;
+    ship->vy = 0;
     ship->dir = 0;
     ship->engine_power = 0;
 
@@ -47,16 +48,39 @@ void ship_set_direction(struct ship *ship, float dir)
 
     while (ship->dir < 0)
         ship->dir += FLOAT_2PI;
-
-    unsigned frame =
-        (unsigned) (NUM_DIRECTIONS * (ship->dir + (RAD_PER_DIRECTION / 2)) / FLOAT_2PI)
-        % NUM_DIRECTIONS;
-
-    ship->ship_sprite.frame = ship->engine_power > 0 ?
-        frame + NUM_DIRECTIONS : frame;
 }
 
 void ship_turn(struct ship *ship, float r)
 {
     ship_set_direction(ship, ship->dir + r);
+}
+
+void ship_set_power(struct ship *ship, float power)
+{
+    ship->engine_power = confine_float(power, 0, SHIP_MAX_ENGINE_POWER);
+}
+
+static void ship_update_sprite(struct ship *ship)
+{
+    unsigned frame =
+        (unsigned) (NUM_DIRECTIONS * (ship->dir + (RAD_PER_DIRECTION / 2)) / FLOAT_2PI)
+        % NUM_DIRECTIONS;
+
+    ship->ship_sprite.frame = ship->engine_power >= MIN_POWER ?
+        frame + NUM_DIRECTIONS : frame;
+
+    ship->ship_sprite.x = world_to_screen_x(ship->x);
+    ship->ship_sprite.y = world_to_screen_y(ship->y);
+}
+
+void ship_update(struct ship *ship, float dt)
+{
+    float dv = dt * (ship->engine_power / SHIP_MASS);
+
+    ship->vx += dv * sin(ship->dir);
+    ship->vy += -dv * cos(ship->dir);
+    ship->x += dt * ship->vx;
+    ship->y += dt * ship->vy;
+
+    ship_update_sprite(ship);
 }

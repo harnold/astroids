@@ -112,3 +112,8 @@ bool key_pressed(unsigned key_code)
 {
     return vbitvect_test_bit(keyboard.key_vector, key_code);
 }
+
+unsigned key_modifiers(void)
+{
+    return keyboard.modifiers;
+}

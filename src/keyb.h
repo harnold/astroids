@@ -111,5 +111,6 @@ enum modifier_keys {
 int keyboard_init(void);
 void keyboard_exit(void);
 bool key_pressed(unsigned key_code);
+unsigned key_modifiers(void);
 
 #endif

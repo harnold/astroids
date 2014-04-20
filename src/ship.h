@@ -5,6 +5,12 @@
 
 #include <stdbool.h>
 
+#define SHIP_MIN_ENERGY         0.01f
+#define SHIP_TURN_PER_SEC       (FLOAT_2PI)
+#define SHIP_MAX_ENGINE_POWER   5000000.0f
+#define SHIP_ENGINE_POWER_INC   100000.0f
+#define SHIP_MASS               1000.0f
+
 struct ship {
     float energy;
     float x;

@@ -30,9 +30,6 @@
 #define ASTEROID_MIN_SPEED      200
 #define ASTEROID_MAX_SPEED      3000
 
-#define SHIP_MIN_ENERGY         0.01f
-#define SHIP_MAX_ACCEL          100.0f
-
 #define PLAYER_NAME_MAX         16
 
 #define TIME_PER_LEVEL          10

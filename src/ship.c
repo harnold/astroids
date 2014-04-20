@@ -1,13 +1,13 @@
 #include "ship.h"
 #include "compat.h"
 #include "res.h"
-#include "scene.h"
 #include "world.h"
 
 #include <math.h>
 
 #define NUM_DIRECTIONS          12
 #define RAD_PER_DIRECTION       (FLOAT_2PI / NUM_DIRECTIONS)
+#define MIN_POWER               0.01f
 
 static struct sprite_class ship_class = {
     &ship_image, 32, 32, 2 * NUM_DIRECTIONS, 16.0f, 16.0f

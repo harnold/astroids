@@ -148,6 +148,21 @@ static void delete_asteroids(void)
         delete_asteroid(asteroid_list_get(node));
 }
 
+static void control_player_ship(float dt)
+{
+    struct ship *ship = &game.player_ship;
+
+    if (key_pressed(KEY_LEFT))
+        ship_turn(ship, -dt * SHIP_TURN_PER_SEC);
+    else if (key_pressed(KEY_RIGHT))
+        ship_turn(ship, dt * SHIP_TURN_PER_SEC);
+
+    if (key_pressed(KEY_UP))
+        ship_set_power(ship, ship->engine_power + SHIP_ENGINE_POWER_INC);
+    else
+        ship_set_power(ship, 0);
+}
+
 static void game_start(void)
 {
     game.score = 0;
@@ -208,6 +223,9 @@ static unsigned int game_loop(void)
             ++game.level;
             level_time = 0;
         }
+
+        control_player_ship(dt);
+        ship_update(&game.player_ship, dt);
 
         update_asteroids(dt);
         create_asteroids(time);

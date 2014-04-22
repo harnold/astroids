@@ -82,5 +82,15 @@ void ship_update(struct ship *ship, float dt)
     ship->x += dt * ship->vx;
     ship->y += dt * ship->vy;
 
+    if ((ship->vx < 0 && ship->x < WORLD_MIN_X) ||
+        (ship->vx > 0 && ship->x > WORLD_MAX_X)) {
+        ship->vx = -ship->vx;
+    }
+
+    if ((ship->vy < 0 && ship->y < WORLD_MIN_Y) ||
+        (ship->vy > 0 && ship->y > WORLD_MAX_Y)) {
+        ship->vy = -ship->vy;
+    }
+
     ship_update_sprite(ship);
 }

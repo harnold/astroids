@@ -1,5 +1,6 @@
 #include "sprite.h"
 
+#include <math.h>
 #include <stdlib.h>
 
 DEFINE_ALLOCATOR(sprite, struct sprite, ALLOC_DEFAULT_BLOB_SIZE);
@@ -84,6 +85,15 @@ void sprite_update(struct sprite *sprite, float t, float dt)
         sprite->frame = max(anim->start_frame - nframe, anim->end_frame);
         break;
     }
+}
+
+bool sprite_test_collision(struct sprite *sprite1, float radius1,
+                           struct sprite *sprite2, float radius2)
+{
+    float dx = fabs(sprite1->x - sprite2->x);
+    float dy = fabs(sprite1->y - sprite2->y);
+
+    return sqrt(dx*dx + dy*dy) < radius1 + radius2;
 }
 
 void sprite_cleanup(void)

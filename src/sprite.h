@@ -70,6 +70,8 @@ void delete_sprite(struct sprite *sprite);
 void sprite_set_animation(struct sprite *sprite, const struct animation *anim,
                           float start_time);
 void sprite_update(struct sprite *sprite, float t, float dt);
+bool sprite_test_collision(struct sprite *sprite1, float radius1,
+                           struct sprite *sprite2, float radius2);
 void sprite_cleanup(void);
 
 static inline int sprite_get_x(const struct sprite *sprite)

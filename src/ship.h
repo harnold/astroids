@@ -7,9 +7,11 @@
 
 #define SHIP_MIN_ENERGY         0.01f
 #define SHIP_TURN_PER_SEC       (FLOAT_2PI)
-#define SHIP_MAX_ENGINE_POWER   5000000.0f
-#define SHIP_ENGINE_POWER_INC   100000.0f
-#define SHIP_MASS               1000.0f
+#define SHIP_MAX_ENGINE_POWER   500000.0f
+#define SHIP_ENGINE_POWER_INC   20000.0f
+#define SHIP_MASS               100.0f
+#define SHIP_SHIELD_FLICKER     3
+#define SHIP_COLLISION_RADIUS   12
 
 struct ship {
     float energy;

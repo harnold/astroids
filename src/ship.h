@@ -21,6 +21,9 @@ struct ship {
     float vy;
     float dir;
     float engine_power;
+    short shield_flicker;
+    unsigned shield_active:1;
+    unsigned shield_visible:1;
     struct sprite ship_sprite;
     struct sprite shield_sprite;
 };
@@ -30,6 +33,7 @@ void destroy_ship(struct ship *ship);
 void ship_set_direction(struct ship *ship, float dir);
 void ship_turn(struct ship *ship, float r);
 void ship_set_power(struct ship *ship, float power);
+void ship_set_shield(struct ship *ship, bool active);
 void ship_update(struct ship *ship, float dt);
 
 #endif

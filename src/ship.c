@@ -26,6 +26,9 @@ void init_ship(struct ship *ship, float x, float y, int z)
     ship->vy = 0;
     ship->dir = 0;
     ship->engine_power = 0;
+    ship->shield_flicker = 0;
+    ship->shield_active = false;
+    ship->shield_visible = false;
 
     init_sprite(&ship->ship_sprite, &ship_class,
                 world_to_screen_x(x),
@@ -71,6 +74,38 @@ static void ship_update_sprite(struct ship *ship)
 
     ship->ship_sprite.x = world_to_screen_x(ship->x);
     ship->ship_sprite.y = world_to_screen_y(ship->y);
+
+    if (ship->shield_active) {
+
+        ship->shield_sprite.x = ship->ship_sprite.x;
+        ship->shield_sprite.y = ship->ship_sprite.y;
+
+        if (ship->shield_flicker == 0) {
+            elist_insert(&ship->shield_sprite.link, ship->ship_sprite.link.next);
+            ship->shield_visible = true;
+        } else if (ship->shield_flicker == 1) {
+            elist_remove(&ship->shield_sprite.link);
+            ship->shield_visible = false;
+        }
+
+        if (++ship->shield_flicker >= SHIP_SHIELD_FLICKER)
+            ship->shield_flicker = 0;
+    }
+}
+
+void ship_set_shield(struct ship *ship, bool active)
+{
+    if (active == ship->shield_active)
+        return;
+
+    ship->shield_active = active ? true : false;
+
+    if (active) {
+        ship->shield_flicker = 0;
+    } else if (ship->shield_visible) {
+        elist_remove(&ship->shield_sprite.link);
+        ship->shield_visible = false;
+    }
 }
 
 void ship_update(struct ship *ship, float dt)

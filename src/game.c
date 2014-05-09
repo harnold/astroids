@@ -69,9 +69,12 @@ static void update_energy_display(void)
 {
     unsigned x = world_to_screen_x(ENERGY_X_POS);
     unsigned y = world_to_screen_y(ENERGY_Y_POS);
+    unsigned w_full = world_to_screen_dx(ENERGY_WIDTH);
     unsigned w = world_to_screen_dx(game.player_ship.energy * ENERGY_WIDTH);
     unsigned h = world_to_screen_dy(ENERGY_HEIGHT);
 
+    gfx_draw_image_section(&background_image, x, y, w_full, h, x, y,
+                           GFX_NO_CLIPPING | IMAGE_BLIT_COPY);
     gfx_draw_rect(x, y, w, h, ENERGY_COLOR, GFX_NO_CLIPPING);
 }
 
@@ -162,7 +165,7 @@ static void control_player_ship(float dt)
         ship_set_power(ship, 0);
 }
 
-static void test_collisions(void)
+static void test_collisions(float dt)
 {
     int num_collisions = 0;
     struct asteroid *ast;
@@ -174,10 +177,18 @@ static void test_collisions(void)
             ++num_collisions;
     }
 
-    if (num_collisions > 0)
+    if (num_collisions > 0) {
+
         ship_set_shield(&game.player_ship, true);
-    else
+
+        game.player_ship.energy -= dt * num_collisions;
+
+        if (game.player_ship.energy < 0)
+            game.player_ship.energy = 0;
+
+    } else {
         ship_set_shield(&game.player_ship, false);
+    }
 }
 
 static void game_start(void)
@@ -244,7 +255,7 @@ static unsigned int game_loop(void)
         create_asteroids(time);
         update_asteroids(dt);
         control_player_ship(dt);
-        test_collisions();
+        test_collisions(dt);
 
         ship_update(&game.player_ship, dt);
 

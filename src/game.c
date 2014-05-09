@@ -20,7 +20,7 @@
 #define ENERGY_X_POS            50
 #define ENERGY_Y_POS            50
 #define ENERGY_WIDTH            800
-#define ENERGY_HEIGHT           80
+#define ENERGY_HEIGHT           100
 
 #define SCORE_DIGITS            6
 #define SCORE_X_POS             3350
@@ -70,7 +70,7 @@ static void update_energy_display(void)
     unsigned x = world_to_screen_x(ENERGY_X_POS);
     unsigned y = world_to_screen_y(ENERGY_Y_POS);
     unsigned w = world_to_screen_dx(game.player_ship.energy * ENERGY_WIDTH);
-    unsigned h = world_to_screen_dx(ENERGY_HEIGHT);
+    unsigned h = world_to_screen_dy(ENERGY_HEIGHT);
 
     gfx_draw_rect(x, y, w, h, ENERGY_COLOR, GFX_NO_CLIPPING);
 }
@@ -86,7 +86,7 @@ static void create_asteroids(float time)
     float d = frand() * FLOAT_2PI;
     float v = ASTEROID_MIN_SPEED + frand() * (ASTEROID_MAX_SPEED - ASTEROID_MIN_SPEED);
     float vx = v * sin(d);
-    float vy = v * cos(d);
+    float vy = -v * cos(d);
 
     float x;
     float y;
@@ -99,11 +99,10 @@ static void create_asteroids(float time)
             screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2);
     }
 
-    if (vx > 0) {
+    if (vx > 0)
         x = WORLD_MIN_X + frand() * WORLD_SIZE_X / 2;
-    } else {
+    else
         x = WORLD_MAX_X - frand() * WORLD_SIZE_X / 2;
-    }
 
     struct asteroid *ast = create_asteroid(BIG_ASTEROID, x, y, vx, vy,
                                            ASTEROIDS_LAYER, time);

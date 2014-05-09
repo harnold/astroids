@@ -163,6 +163,24 @@ static void control_player_ship(float dt)
         ship_set_power(ship, 0);
 }
 
+static void test_collisions(void)
+{
+    int num_collisions = 0;
+    struct asteroid *ast;
+
+    asteroid_list_for_each(ast, &game.asteroids) {
+        if (sprite_test_collision(
+                &game.player_ship.ship_sprite, SHIP_COLLISION_RADIUS,
+                &ast->sprite, asteroid_classes[ast->type].width / 2))
+            ++num_collisions;
+    }
+
+    if (num_collisions > 0)
+        ship_set_shield(&game.player_ship, true);
+    else
+        ship_set_shield(&game.player_ship, false);
+}
+
 static void game_start(void)
 {
     game.score = 0;
@@ -224,11 +242,12 @@ static unsigned int game_loop(void)
             level_time = 0;
         }
 
-        control_player_ship(dt);
-        ship_update(&game.player_ship, dt);
-
-        update_asteroids(dt);
         create_asteroids(time);
+        update_asteroids(dt);
+        control_player_ship(dt);
+        test_collisions();
+
+        ship_update(&game.player_ship, dt);
 
         scene_update(&game.scene, time, dt);
         scene_draw(&game.scene);

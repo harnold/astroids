@@ -73,9 +73,8 @@ static void update_energy_display(void)
     unsigned w = world_to_screen_dx(game.player_ship.energy * ENERGY_WIDTH);
     unsigned h = world_to_screen_dy(ENERGY_HEIGHT);
 
-    gfx_draw_image_section(&background_image, x, y, w_full, h, x, y,
-                           GFX_NO_CLIPPING | IMAGE_BLIT_COPY);
     gfx_draw_rect(x, y, w, h, ENERGY_COLOR, GFX_NO_CLIPPING);
+    scene_add_damage_rect(&game.scene, x, y, w, h);
 }
 
 static void create_asteroids(float time)

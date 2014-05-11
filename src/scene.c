@@ -83,6 +83,11 @@ void scene_remove_sprite(struct scene *scene, struct sprite *sprite)
     elist_remove(&sprite->link);
 }
 
+void scene_add_damage_rect(struct scene *scene, int x, int y, int w, int h)
+{
+    create_damage_rect(x, y, w, h, &scene->damage_list);
+}
+
 void scene_update(struct scene *scene, float t, float dt)
 {
     struct sprite *sprite;

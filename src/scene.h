@@ -19,6 +19,7 @@ void scene_add_sprite(struct scene *scene, struct sprite *sprite);
 void scene_insert_sprite(struct scene *scene, struct sprite *prev,
                          struct sprite *sprite);
 void scene_remove_sprite(struct scene *scene, struct sprite *sprite);
+void scene_add_damage_rect(struct scene *scene, int x, int y, int w, int h);
 void scene_update(struct scene *scene, float t, float dt);
 void scene_draw(struct scene *scene);
 void scene_cleanup(void);

@@ -27,8 +27,6 @@
 #define SCORE_Y_POS             50
 
 #define ASTEROIDS_MAX           50
-#define ASTEROID_MIN_SPEED      200
-#define ASTEROID_MAX_SPEED      3000
 
 #define PLAYER_NAME_MAX         16
 

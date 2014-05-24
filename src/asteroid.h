@@ -7,9 +7,8 @@
 
 #include <stdbool.h>
 
-struct animation;
-struct sprite_class;
-struct sprite;
+#define ASTEROID_MIN_SPEED      200
+#define ASTEROID_MAX_SPEED      3000
 
 extern const struct animation asteroid_animations[];
 extern const struct sprite_class asteroid_classes[];

@@ -37,11 +37,10 @@ void init_asteroid(struct asteroid *ast, enum asteroid_type type,
 
     const struct animation *anim;
 
-    if (vy > 0) {
+    if (vy > 0)
         anim = &asteroid_animations[ASTEROID_FORWARD + type];
-    } else {
+    else
         anim = &asteroid_animations[ASTEROID_BACKWARD + type];
-    }
 
     sprite_set_animation(&ast->sprite, anim, time);
     elist_link(&ast->link, &ast->link);

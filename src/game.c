@@ -2,6 +2,7 @@
 #include "asteroid.h"
 #include "compat.h"
 #include "keyb.h"
+#include "missile.h"
 #include "res.h"
 #include "scene.h"
 #include "ship.h"
@@ -14,7 +15,8 @@
 
 #define SCORE_LAYER             0
 #define SHIP_LAYER              1
-#define ASTEROIDS_LAYER         2
+#define MISSILE_LAYER           2
+#define ASTEROIDS_LAYER         3
 
 #define ENERGY_COLOR            253
 #define ENERGY_X_POS            50
@@ -46,6 +48,7 @@ static struct {
     struct ship player_ship;
     struct elist asteroids;
     unsigned int num_asteroids;
+    struct elist missiles;
     struct sprite score_sprites[SCORE_DIGITS];
 } game;
 
@@ -171,7 +174,32 @@ static void delete_asteroids(void)
         delete_asteroid(asteroid_list_get(node));
 }
 
-static void control_player_ship(float dt)
+static void update_missiles(float dt)
+{
+    struct elist_node *node, *tmp;
+
+    elist_for_each_node_safe(node, tmp, &game.missiles) {
+
+        struct missile *mis = missile_list_get(node);
+
+        mis->x += dt * mis->vx;
+        mis->y += -dt * mis->vy;
+
+        mis->sprite.x = world_to_screen_x(mis->x);
+        mis->sprite.y = world_to_screen_y(mis->y);
+
+        if ((mis->x < WORLD_MIN_X && mis->vx < 0) ||
+            (mis->x > WORLD_MAX_X && mis->vx > 0) ||
+            (mis->y < WORLD_MIN_Y && mis->vy < 0) ||
+            (mis->y > WORLD_MAX_Y && mis->vy > 0)) {
+
+            if (!gfx_sprite_visible(&mis->sprite))
+                delete_missile(mis);
+        }
+    }
+}
+
+static void control_player_ship(float time, float dt)
 {
     struct ship *ship = &game.player_ship;
 
@@ -184,6 +212,19 @@ static void control_player_ship(float dt)
         ship_set_power(ship, ship->engine_power + SHIP_ENGINE_POWER_INC);
     else
         ship_set_power(ship, 0);
+
+    if (key_pressed(KEY_SPACE) && time > ship->last_shot + SHIP_FIRE_INTERVAL) {
+
+        float vx = MISSILE_SPEED * sin(ship->dir);
+        float vy = MISSILE_SPEED * cos(ship->dir);
+
+        struct missile *mis = create_missile(ship->x, ship->y, vx, vy,
+                                             MISSILE_LAYER);
+
+        elist_insert_back(&mis->link, &game.missiles);
+        scene_add_sprite(&game.scene, &mis->sprite);
+        ship->last_shot = time;
+    }
 }
 
 static void test_collisions(float dt)
@@ -225,6 +266,7 @@ static void game_start(void)
 
     game.num_asteroids = 0;
     init_elist(&game.asteroids);
+    init_elist(&game.missiles);
 
     for (int i = 0; i < SCORE_DIGITS; i++) {
         init_sprite(&game.score_sprites[i], &font_class,
@@ -273,7 +315,7 @@ static unsigned int game_loop(void)
             level_time = 0;
         }
 
-        control_player_ship(dt);
+        control_player_ship(time, dt);
         test_collisions(dt);
 
         create_asteroids(time);
@@ -310,6 +352,7 @@ void game_exit(void)
     res_destroy_images();
 
     asteroid_cleanup();
+    missile_cleanup();
     scene_cleanup();
     sprite_cleanup();
 }

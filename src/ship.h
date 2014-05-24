@@ -12,6 +12,7 @@
 #define SHIP_MASS               100.0f
 #define SHIP_SHIELD_FLICKER     3
 #define SHIP_COLLISION_RADIUS   12
+#define SHIP_FIRE_INTERVAL      0.2f
 
 struct ship {
     float energy;
@@ -21,6 +22,7 @@ struct ship {
     float vy;
     float dir;
     float engine_power;
+    float last_shot;
     short shield_flicker;
     unsigned shield_active:1;
     unsigned shield_visible:1;

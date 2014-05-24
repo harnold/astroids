@@ -34,6 +34,6 @@ void ship_set_direction(struct ship *ship, float dir);
 void ship_turn(struct ship *ship, float r);
 void ship_set_power(struct ship *ship, float power);
 void ship_set_shield(struct ship *ship, bool active);
-void ship_update(struct ship *ship, float dt);
+void ship_update_sprite(struct ship *ship);
 
 #endif

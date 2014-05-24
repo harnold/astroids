@@ -77,6 +77,30 @@ static void update_energy_display(void)
     scene_add_damage_rect(&game.scene, x, y, w, h);
 }
 
+static void update_player_ship(float dt)
+{
+    struct ship *ship = &game.player_ship;
+
+    float dv = dt * (ship->engine_power / SHIP_MASS);
+
+    ship->vx += dv * sin(ship->dir);
+    ship->vy += -dv * cos(ship->dir);
+    ship->x += dt * ship->vx;
+    ship->y += dt * ship->vy;
+
+    if ((ship->vx < 0 && ship->x < WORLD_MIN_X) ||
+        (ship->vx > 0 && ship->x > WORLD_MAX_X)) {
+        ship->vx = -ship->vx;
+    }
+
+    if ((ship->vy < 0 && ship->y < WORLD_MIN_Y) ||
+        (ship->vy > 0 && ship->y > WORLD_MAX_Y)) {
+        ship->vy = -ship->vy;
+    }
+
+    ship_update_sprite(ship);
+}
+
 static void create_asteroids(float time)
 {
     if (game.num_asteroids >= ASTEROIDS_MAX)
@@ -251,12 +275,13 @@ static unsigned int game_loop(void)
             level_time = 0;
         }
 
-        create_asteroids(time);
-        update_asteroids(dt);
         control_player_ship(dt);
         test_collisions(dt);
 
-        ship_update(&game.player_ship, dt);
+        create_asteroids(time);
+        update_asteroids(dt);
+        update_missiles(dt);
+        update_player_ship(dt);
 
         scene_update(&game.scene, time, dt);
         scene_draw(&game.scene);

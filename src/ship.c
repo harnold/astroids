@@ -63,7 +63,7 @@ void ship_set_power(struct ship *ship, float power)
     ship->engine_power = confine_float(power, 0, SHIP_MAX_ENGINE_POWER);
 }
 
-static void ship_update_sprite(struct ship *ship)
+void ship_update_sprite(struct ship *ship)
 {
     unsigned frame =
         (unsigned) (NUM_DIRECTIONS * (ship->dir + (RAD_PER_DIRECTION / 2)) / FLOAT_2PI)
@@ -106,26 +106,4 @@ void ship_set_shield(struct ship *ship, bool active)
         elist_remove(&ship->shield_sprite.link);
         ship->shield_visible = false;
     }
-}
-
-void ship_update(struct ship *ship, float dt)
-{
-    float dv = dt * (ship->engine_power / SHIP_MASS);
-
-    ship->vx += dv * sin(ship->dir);
-    ship->vy += -dv * cos(ship->dir);
-    ship->x += dt * ship->vx;
-    ship->y += dt * ship->vy;
-
-    if ((ship->vx < 0 && ship->x < WORLD_MIN_X) ||
-        (ship->vx > 0 && ship->x > WORLD_MAX_X)) {
-        ship->vx = -ship->vx;
-    }
-
-    if ((ship->vy < 0 && ship->y < WORLD_MIN_Y) ||
-        (ship->vy > 0 && ship->y > WORLD_MAX_Y)) {
-        ship->vy = -ship->vy;
-    }
-
-    ship_update_sprite(ship);
 }

@@ -17,6 +17,7 @@ OBJS = &
     image.obj &
     keyb.obj &
     main.obj &
+    missile.obj &
     palette.obj &
     pcx.obj &
     res.obj &

@@ -8,6 +8,7 @@ file    gfx.obj
 file    image.obj
 file    keyb.obj
 file    main.obj
+file    missile.obj
 file    palette.obj
 file    pcx.obj
 file    res.obj

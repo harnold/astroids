@@ -78,6 +78,35 @@ static void update_energy_display(void)
     scene_add_damage_rect(&game.scene, x, y, w, h);
 }
 
+static void control_player_ship(float time, float dt)
+{
+    struct ship *ship = &game.player_ship;
+
+    if (key_pressed(KEY_LEFT))
+        ship_turn(ship, -dt * SHIP_TURN_PER_SEC);
+    else if (key_pressed(KEY_RIGHT))
+        ship_turn(ship, dt * SHIP_TURN_PER_SEC);
+
+    if (key_pressed(KEY_UP))
+        ship_set_power(ship, ship->engine_power + SHIP_ENGINE_POWER_INC);
+    else
+        ship_set_power(ship, 0);
+
+    if (key_pressed(KEY_SPACE) && time > ship->last_shot + SHIP_FIRE_INTERVAL) {
+
+        float dir = ship_get_visible_direction(ship);
+        float vx = MISSILE_SPEED * sin(dir);
+        float vy = MISSILE_SPEED * cos(dir);
+
+        struct missile *mis = create_missile(ship->x, ship->y, vx, vy,
+                                             MISSILE_LAYER);
+
+        elist_insert_back(&mis->link, &game.missiles);
+        scene_add_sprite(&game.scene, &mis->sprite);
+        ship->last_shot = time;
+    }
+}
+
 static void update_player_ship(float dt)
 {
     struct ship *ship = &game.player_ship;
@@ -197,35 +226,6 @@ static void update_missiles(float dt)
             if (!gfx_sprite_visible(&mis->sprite))
                 delete_missile(mis);
         }
-    }
-}
-
-static void control_player_ship(float time, float dt)
-{
-    struct ship *ship = &game.player_ship;
-
-    if (key_pressed(KEY_LEFT))
-        ship_turn(ship, -dt * SHIP_TURN_PER_SEC);
-    else if (key_pressed(KEY_RIGHT))
-        ship_turn(ship, dt * SHIP_TURN_PER_SEC);
-
-    if (key_pressed(KEY_UP))
-        ship_set_power(ship, ship->engine_power + SHIP_ENGINE_POWER_INC);
-    else
-        ship_set_power(ship, 0);
-
-    if (key_pressed(KEY_SPACE) && time > ship->last_shot + SHIP_FIRE_INTERVAL) {
-
-        float dir = ship_get_visible_direction(ship);
-        float vx = MISSILE_SPEED * sin(dir);
-        float vy = MISSILE_SPEED * cos(dir);
-
-        struct missile *mis = create_missile(ship->x, ship->y, vx, vy,
-                                             MISSILE_LAYER);
-
-        elist_insert_back(&mis->link, &game.missiles);
-        scene_add_sprite(&game.scene, &mis->sprite);
-        ship->last_shot = time;
     }
 }
 

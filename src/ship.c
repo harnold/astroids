@@ -17,6 +17,13 @@ static struct sprite_class shield_class = {
     &shield_image, 32, 32, 1, 16.0f, 16.0f
 };
 
+static inline unsigned ship_get_dir_sector(struct ship *ship)
+{
+    return (unsigned) ((NUM_DIRECTIONS / FLOAT_2PI) *
+                       (ship->dir + (RAD_PER_DIRECTION / 2)))
+        % NUM_DIRECTIONS;
+}
+
 void init_ship(struct ship *ship, float x, float y, int z)
 {
     ship->energy = 1.0f;
@@ -45,6 +52,11 @@ void destroy_ship(struct ship *ship)
     destroy_sprite(&ship->shield_sprite);
 }
 
+float ship_get_visible_direction(struct ship *ship)
+{
+    return (float) ship_get_dir_sector(ship) * (FLOAT_2PI / NUM_DIRECTIONS);
+}
+
 void ship_set_direction(struct ship *ship, float dir)
 {
     ship->dir = dir;
@@ -65,9 +77,7 @@ void ship_set_power(struct ship *ship, float power)
 
 void ship_update_sprite(struct ship *ship)
 {
-    unsigned frame =
-        (unsigned) (NUM_DIRECTIONS * (ship->dir + (RAD_PER_DIRECTION / 2)) / FLOAT_2PI)
-        % NUM_DIRECTIONS;
+    unsigned frame = ship_get_dir_sector(ship);
 
     ship->ship_sprite.frame = ship->engine_power >= MIN_POWER ?
         frame + NUM_DIRECTIONS : frame;

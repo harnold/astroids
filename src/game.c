@@ -83,9 +83,10 @@ static void update_player_ship(float dt)
     struct ship *ship = &game.player_ship;
 
     float dv = dt * (ship->engine_power / SHIP_MASS);
+    float dir = ship_get_visible_direction(ship);
 
-    ship->vx += dv * sin(ship->dir);
-    ship->vy += -dv * cos(ship->dir);
+    ship->vx += dv * sin(dir);
+    ship->vy += -dv * cos(dir);
     ship->x += dt * ship->vx;
     ship->y += dt * ship->vy;
 
@@ -215,8 +216,9 @@ static void control_player_ship(float time, float dt)
 
     if (key_pressed(KEY_SPACE) && time > ship->last_shot + SHIP_FIRE_INTERVAL) {
 
-        float vx = MISSILE_SPEED * sin(ship->dir);
-        float vy = MISSILE_SPEED * cos(ship->dir);
+        float dir = ship_get_visible_direction(ship);
+        float vx = MISSILE_SPEED * sin(dir);
+        float vy = MISSILE_SPEED * cos(dir);
 
         struct missile *mis = create_missile(ship->x, ship->y, vx, vy,
                                              MISSILE_LAYER);

@@ -32,6 +32,7 @@ struct ship {
 
 void init_ship(struct ship *ship, float x, float y, int z);
 void destroy_ship(struct ship *ship);
+float ship_get_visible_direction(struct ship *ship);
 void ship_set_direction(struct ship *ship, float dir);
 void ship_turn(struct ship *ship, float r);
 void ship_set_power(struct ship *ship, float power);

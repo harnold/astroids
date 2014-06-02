@@ -5,7 +5,8 @@
 #include "elist.h"
 #include "sprite.h"
 
-#define MISSILE_SPEED       10000
+#define MISSILE_SPEED                   10000
+#define MISSILE_COLLISION_RADIUS        4
 
 struct missile {
     float x;

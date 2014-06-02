@@ -229,9 +229,36 @@ static void update_missiles(float dt)
     }
 }
 
-static void test_collisions(float dt)
+static void test_missile_asteroid_collisions(void)
+{
+    struct elist_node *ast_node, *ast_tmp;
+
+    elist_for_each_node_safe(ast_node, ast_tmp, &game.asteroids) {
+
+        struct asteroid *ast = asteroid_list_get(ast_node);
+        struct elist_node *mis_node, *mis_tmp;
+
+        elist_for_each_node_safe(mis_node, mis_tmp, &game.missiles) {
+
+            struct missile *mis = missile_list_get(mis_node);
+
+            if (sprite_test_collision(
+                    &mis->sprite, MISSILE_COLLISION_RADIUS,
+                    &ast->sprite, asteroid_classes[ast->type].width / 2)) {
+
+                delete_missile(mis);
+                delete_asteroid(ast);
+                --game.num_asteroids;
+            }
+        }
+
+    }
+}
+
+static void test_asteroid_ship_collisions(float dt)
 {
     int num_collisions = 0;
+
     struct asteroid *ast;
 
     asteroid_list_for_each(ast, &game.asteroids) {
@@ -244,7 +271,6 @@ static void test_collisions(float dt)
     if (num_collisions > 0) {
 
         ship_set_shield(&game.player_ship, true);
-
         game.player_ship.energy -= dt * num_collisions;
 
         if (game.player_ship.energy < 0)
@@ -253,6 +279,12 @@ static void test_collisions(float dt)
     } else {
         ship_set_shield(&game.player_ship, false);
     }
+}
+
+static void test_collisions(float dt)
+{
+    test_missile_asteroid_collisions();
+    test_asteroid_ship_collisions(dt);
 }
 
 static void game_start(void)

@@ -111,9 +111,14 @@ static inline void elist_move(struct elist_node *node, struct elist_node *next)
 void elist_splice(struct elist_node *begin, struct elist_node *end,
                   struct elist_node *next)
 {
+    if (begin == end)
+        return;
+
+    struct elist_node *next_prev = next->prev;
+
     elist_link(end->prev, next);
     elist_link(begin->prev, end);
-    elist_link(next->prev, begin);
+    elist_link(next_prev, begin);
 }
 
 #endif

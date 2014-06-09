@@ -29,6 +29,7 @@
 #define SCORE_Y_POS             50
 
 #define ASTEROIDS_MAX           50
+#define ASTEROID_MIN_DELAY      0.1f
 
 #define PLAYER_NAME_MAX         16
 
@@ -48,6 +49,7 @@ static struct {
     struct ship player_ship;
     struct elist asteroids;
     unsigned int num_asteroids;
+    float last_asteroid_time;
     struct elist missiles;
     struct sprite score_sprites[SCORE_DIGITS];
 } game;
@@ -134,11 +136,11 @@ static void update_player_ship(float dt)
 
 static void create_asteroids(float time)
 {
-    if (game.num_asteroids >= ASTEROIDS_MAX)
+    if (game.num_asteroids >= ASTEROIDS_MAX ||
+        game.num_asteroids >= game.level ||
+        time < game.last_asteroid_time + ASTEROID_MIN_DELAY) {
         return;
-
-    if (game.num_asteroids >= game.level)
-        return;
+    }
 
     float d = frand() * FLOAT_2PI;
     float v = ASTEROID_MIN_SPEED + frand() * (ASTEROID_MAX_SPEED - ASTEROID_MIN_SPEED);
@@ -167,6 +169,7 @@ static void create_asteroids(float time)
     elist_insert_back(&ast->link, &game.asteroids);
     scene_add_sprite(&game.scene, &ast->sprite);
     ++game.num_asteroids;
+    game.last_asteroid_time = time;
 }
 
 static void update_asteroids(float dt)
@@ -299,6 +302,7 @@ static void game_start(void)
     scene_add_sprite(&game.scene, &game.player_ship.ship_sprite);
 
     game.num_asteroids = 0;
+    game.last_asteroid_time = 0;
     init_elist(&game.asteroids);
     init_elist(&game.missiles);
 

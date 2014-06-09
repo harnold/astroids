@@ -53,7 +53,7 @@ DECLARE_ALLOCATOR(sprite, struct sprite);
     elist_for_each_elem((__sprite), (__list), struct sprite, link)
 
 #define sprite_list_get(__node) \
-    elist_get(__node, struct sprite, link)
+    elist_get((__node), struct sprite, link)
 
 static inline int sprite_get_x(const struct sprite *sprite);
 static inline int sprite_get_y(const struct sprite *sprite);

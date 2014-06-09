@@ -23,12 +23,12 @@ DECLARE_ALLOCATOR(missile, struct missile);
     elist_for_each_elem((__missile), (__list), struct missile, link)
 
 #define missile_list_get(__node) \
-    elist_get(__node, struct missile, link)
+    elist_get((__node), struct missile, link)
 
 void init_missile(struct missile *mis, float x, float y, float vx, float vy, int z);
 void destroy_missile(struct missile *mis);
 struct missile *create_missile(float x, float y, float vx, float vy, int z);
 void delete_missile(struct missile *mis);
-void missile_cleanup();
+void missile_cleanup(void);
 
 #endif

@@ -41,7 +41,7 @@ void delete_missile(struct missile *mis)
     free_missile(mis);
 }
 
-void missile_cleanup()
+void missile_cleanup(void)
 {
     free_all_missile_allocs();
 }

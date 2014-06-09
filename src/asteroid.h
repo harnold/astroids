@@ -35,7 +35,7 @@ DECLARE_ALLOCATOR(asteroid, struct asteroid);
     elist_for_each_elem((__asteroid), (__list), struct asteroid, link)
 
 #define asteroid_list_get(__node) \
-    elist_get(__node, struct asteroid, link)
+    elist_get((__node), struct asteroid, link)
 
 void init_asteroid(struct asteroid *ast, enum asteroid_type type,
                    float x, float y, float vx, float vy, int z, float time);

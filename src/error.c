@@ -33,7 +33,7 @@ void error_set_log_file(FILE *file)
     error_log_file = file;
 }
 
-void log(const char *format, ...)
+void log_msg(const char *format, ...)
 {
     va_list args;
 

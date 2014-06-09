@@ -34,6 +34,7 @@
 #define PLAYER_NAME_MAX         16
 
 #define TIME_PER_LEVEL          10
+#define POINTS_PER_HIT          100
 
 struct gfx_mode_info gfx_mode_info;
 
@@ -259,6 +260,8 @@ static void test_missile_asteroid_collisions(void)
         if (asteroid_hit) {
             delete_asteroid(ast);
             --game.num_asteroids;
+            game.score += POINTS_PER_HIT;
+            update_number_display(&game.score_sprites, SCORE_DIGITS, game.score);
         }
     }
 }

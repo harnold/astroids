@@ -152,10 +152,10 @@ static void create_asteroids(float time)
 
     if (vy > 0) {
         y = WORLD_MIN_Y -
-            screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2);
+            screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2) + 1;
     } else {
         y = WORLD_MAX_Y +
-            screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2);
+            screen_to_world_dy(asteroid_classes[BIG_ASTEROID].height / 2) - 1;
     }
 
     if (vx > 0)

@@ -30,6 +30,7 @@
 
 #define ASTEROIDS_MAX           50
 #define ASTEROID_MIN_DELAY      0.1f
+#define ASTEROID_FRAGMENTS      4
 
 #define PLAYER_NAME_MAX         16
 
@@ -135,6 +136,35 @@ static void update_player_ship(float dt)
     ship_update_sprite(ship);
 }
 
+static void blow_up_asteroid(struct asteroid *ast, float time, struct elist *list)
+{
+    if (ast->type == BIG_ASTEROID || ast->type == MID_ASTEROID) {
+
+        enum asteroid_type new_type =
+            ast->type == BIG_ASTEROID ? MID_ASTEROID : SMALL_ASTEROID;
+
+        float new_dir = frand() * FLOAT_2PI;
+
+        for (int i = 0; i < ASTEROID_FRAGMENTS; i++) {
+
+            float d = new_dir + i * FLOAT_2PI / 4.0f;
+            float v = ASTEROID_MIN_SPEED + frand() * (ASTEROID_MAX_SPEED - ASTEROID_MIN_SPEED);
+            float vx = v * sin(d );
+            float vy = -v * cos(d);
+
+            struct asteroid *new_ast = create_asteroid(
+                new_type, ast->x, ast->y, vx, vy, ASTEROIDS_LAYER, time);
+
+            elist_insert_back(&new_ast->link, list);
+            scene_add_sprite(&game.scene, &new_ast->sprite);
+            ++game.num_asteroids;
+        }
+    }
+
+    delete_asteroid(ast);
+    --game.num_asteroids;
+}
+
 static void create_asteroids(float time)
 {
     if (game.num_asteroids >= ASTEROIDS_MAX ||
@@ -233,8 +263,11 @@ static void update_missiles(float dt)
     }
 }
 
-static void test_missile_asteroid_collisions(void)
+static void test_missile_asteroid_collisions(float time)
 {
+    struct elist new_asteroids;
+    init_elist(&new_asteroids);
+
     struct elist_node *ast_node, *ast_tmp;
 
     elist_for_each_node_safe(ast_node, ast_tmp, &game.asteroids) {
@@ -258,12 +291,14 @@ static void test_missile_asteroid_collisions(void)
         }
 
         if (asteroid_hit) {
-            delete_asteroid(ast);
-            --game.num_asteroids;
-            game.score += POINTS_PER_HIT;
+            game.score += POINTS_PER_HIT << (unsigned) ast->type;
             update_number_display(&game.score_sprites, SCORE_DIGITS, game.score);
+            blow_up_asteroid(ast, time, &new_asteroids);
         }
     }
+
+    elist_splice(elist_begin(&new_asteroids), elist_end(&new_asteroids),
+                 elist_end(&game.asteroids));
 }
 
 static void test_asteroid_ship_collisions(float dt)
@@ -292,9 +327,9 @@ static void test_asteroid_ship_collisions(float dt)
     }
 }
 
-static void test_collisions(float dt)
+static void test_collisions(float time, float dt)
 {
-    test_missile_asteroid_collisions();
+    test_missile_asteroid_collisions(time);
     test_asteroid_ship_collisions(dt);
 }
 
@@ -362,7 +397,7 @@ static unsigned int game_loop(void)
         }
 
         control_player_ship(time, dt);
-        test_collisions(dt);
+        test_collisions(time, dt);
 
         create_asteroids(time);
         update_asteroids(dt);

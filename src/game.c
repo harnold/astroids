@@ -1,6 +1,7 @@
 #include "game.h"
 #include "asteroid.h"
 #include "compat.h"
+#include "explosion.h"
 #include "keyb.h"
 #include "missile.h"
 #include "res.h"
@@ -16,7 +17,8 @@
 #define SCORE_LAYER             0
 #define SHIP_LAYER              1
 #define MISSILE_LAYER           2
-#define ASTEROIDS_LAYER         3
+#define EXPLOSIONS_LAYER        3
+#define ASTEROIDS_LAYER         4
 
 #define ENERGY_COLOR            253
 #define ENERGY_X_POS            50
@@ -53,6 +55,7 @@ static struct {
     unsigned int num_asteroids;
     float last_asteroid_time;
     struct elist missiles;
+    struct elist explosions;
     struct sprite score_sprites[SCORE_DIGITS];
 } game;
 
@@ -161,6 +164,11 @@ static void blow_up_asteroid(struct asteroid *ast, float time, struct elist *lis
         }
     }
 
+    struct explosion *exp = create_explosion(ast->x, ast->y, EXPLOSIONS_LAYER, time);
+
+    elist_insert_back(&exp->link, &game.explosions);
+    scene_add_sprite(&game.scene, &exp->sprite);
+
     delete_asteroid(ast);
     --game.num_asteroids;
 }
@@ -263,6 +271,19 @@ static void update_missiles(float dt)
     }
 }
 
+static void update_explosions(float time, float dt)
+{
+    struct elist_node *node, *tmp;
+
+    elist_for_each_node_safe(node, tmp, &game.explosions) {
+
+        struct explosion *exp = explosion_list_get(node);
+
+        if (time - exp->sprite.anim_start_time > explosion_duration)
+            delete_explosion(exp);
+    }
+}
+
 static void test_missile_asteroid_collisions(float time)
 {
     struct elist new_asteroids;
@@ -348,6 +369,7 @@ static void game_start(void)
     game.last_asteroid_time = 0;
     init_elist(&game.asteroids);
     init_elist(&game.missiles);
+    init_elist(&game.explosions);
 
     for (int i = 0; i < SCORE_DIGITS; i++) {
         init_sprite(&game.score_sprites[i], &font_class,
@@ -402,6 +424,7 @@ static unsigned int game_loop(void)
         create_asteroids(time);
         update_asteroids(dt);
         update_missiles(dt);
+        update_explosions(time, dt);
         update_player_ship(dt);
 
         scene_update(&game.scene, time, dt);
@@ -434,6 +457,7 @@ void game_exit(void)
 
     asteroid_cleanup();
     missile_cleanup();
+    explosion_cleanup();
     scene_cleanup();
     sprite_cleanup();
 }

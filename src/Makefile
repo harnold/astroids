@@ -12,6 +12,7 @@ OBJS = &
     asteroid.obj &
     dpmi.obj &
     error.obj &
+    explosion.obj &
     game.obj &
     gfx.obj &
     image.obj &

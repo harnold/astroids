@@ -241,6 +241,8 @@ static void test_missile_asteroid_collisions(void)
         struct asteroid *ast = asteroid_list_get(ast_node);
         struct elist_node *mis_node, *mis_tmp;
 
+        bool asteroid_hit = false;
+
         elist_for_each_node_safe(mis_node, mis_tmp, &game.missiles) {
 
             struct missile *mis = missile_list_get(mis_node);
@@ -250,11 +252,14 @@ static void test_missile_asteroid_collisions(void)
                     &ast->sprite, asteroid_classes[ast->type].width / 2)) {
 
                 delete_missile(mis);
-                delete_asteroid(ast);
-                --game.num_asteroids;
+                asteroid_hit = true;
             }
         }
 
+        if (asteroid_hit) {
+            delete_asteroid(ast);
+            --game.num_asteroids;
+        }
     }
 }
 

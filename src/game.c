@@ -30,6 +30,9 @@
 #define SCORE_X_POS             3350
 #define SCORE_Y_POS             50
 
+#define GAME_PAUSED_X           100
+#define GAME_PAUSED_Y           50
+
 #define ASTEROIDS_MAX           50
 #define ASTEROID_MIN_DELAY      0.1f
 #define ASTEROID_FRAGMENTS      4
@@ -398,6 +401,7 @@ static void game_end(void)
 static unsigned int game_loop(void)
 {
     bool quit = false;
+    bool paused = false;
 
     const float start_time = timer_get_time();
     float time = start_time;
@@ -407,6 +411,18 @@ static unsigned int game_loop(void)
 
         if (key_pressed(KEY_ESC))
             break;
+
+        if (paused) {
+            while (key_pressed(KEY_P)) { /* wait */ }
+            while (!key_pressed(KEY_ESC) && !key_pressed(KEY_P)) { /* wait */ }
+            while (key_pressed(KEY_ESC) || key_pressed(KEY_P)) { /* wait */ }
+            paused = false;
+            timer_get_time_delta();
+        }
+
+        if (key_pressed(KEY_P)) {
+            paused = true;
+        }
 
         float dt = timer_get_time_delta();
         time += dt;
@@ -430,6 +446,13 @@ static unsigned int game_loop(void)
         scene_update(&game.scene, time, dt);
         scene_draw(&game.scene);
         update_energy_display();
+
+        if (paused) {
+            scene_overlay_image(&game.scene, &game_paused_image,
+                                GAME_PAUSED_X, GAME_PAUSED_Y,
+                                IMAGE_BLIT_MASK);
+        }
+
         gfx_draw_back_buffer();
     }
 

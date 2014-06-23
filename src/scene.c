@@ -97,6 +97,13 @@ void scene_update(struct scene *scene, float t, float dt)
     }
 }
 
+void scene_overlay_image(struct scene *scene, struct image *image, int x, int y,
+                         unsigned flags)
+{
+    gfx_draw_image(image, x, y, flags);
+    scene_add_damage_rect(scene, x, y, image->width, image->height);
+}
+
 void scene_draw(struct scene *scene)
 {
     struct damage_rect *r;

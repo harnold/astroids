@@ -151,13 +151,13 @@ static void blow_up_asteroid(struct asteroid *ast, float time, struct elist *lis
         enum asteroid_type new_type =
             ast->type == BIG_ASTEROID ? MID_ASTEROID : SMALL_ASTEROID;
 
-        float new_dir = frand() * FLOAT_2PI;
+        float base_dir = frand() * FLOAT_2PI;
 
         for (int i = 0; i < ASTEROID_FRAGMENTS; i++) {
 
-            float d = new_dir + i * FLOAT_2PI / 4.0f;
+            float d = base_dir + i * FLOAT_2PI / 4.0f + (frand() - 0.5f) * FLOAT_2PI / 12.0f;
             float v = ASTEROID_MIN_SPEED + frand() * (ASTEROID_MAX_SPEED - ASTEROID_MIN_SPEED);
-            float vx = v * sin(d );
+            float vx = v * sin(d);
             float vy = -v * cos(d);
 
             struct asteroid *new_ast = create_asteroid(

@@ -41,6 +41,7 @@
 
 #define TIME_PER_LEVEL          10
 #define POINTS_PER_HIT          100
+#define ENERGY_REFILL_SCORE     10000
 
 struct gfx_mode_info gfx_mode_info;
 
@@ -51,6 +52,7 @@ static const struct sprite_class font_class = {
 static struct {
     char name[PLAYER_NAME_MAX];
     unsigned int score;
+    unsigned int energy_refill_score;
     unsigned int level;
     struct scene scene;
     struct ship player_ship;
@@ -360,6 +362,7 @@ static void test_collisions(float time, float dt)
 static void game_start(void)
 {
     game.score = 0;
+    game.energy_refill_score = ENERGY_REFILL_SCORE;
     game.level = 1;
 
     init_scene(&game.scene);
@@ -432,6 +435,11 @@ static unsigned int game_loop(void)
         if (level_time >= TIME_PER_LEVEL) {
             ++game.level;
             level_time = 0;
+        }
+
+        if (game.score > game.energy_refill_score) {
+            game.player_ship.energy = 1.0f;
+            game.energy_refill_score += ENERGY_REFILL_SCORE;
         }
 
         control_player_ship(time, dt);

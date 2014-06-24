@@ -276,6 +276,14 @@ static void update_missiles(float dt)
     }
 }
 
+static void delete_missiles(void)
+{
+    struct elist_node *node, *tmp;
+
+    elist_for_each_node_safe(node, tmp, &game.missiles)
+        delete_missile(missile_list_get(node));
+}
+
 static void update_explosions(float time, float dt)
 {
     struct elist_node *node, *tmp;
@@ -287,6 +295,14 @@ static void update_explosions(float time, float dt)
         if (time - exp->sprite.anim_start_time > EXPLOSION_DURATION)
             delete_explosion(exp);
     }
+}
+
+static void delete_explosions(void)
+{
+    struct elist_node *node, *tmp;
+
+    elist_for_each_node_safe(node, tmp, &game.explosions)
+        delete_explosion(explosion_list_get(node));
 }
 
 static void test_missile_asteroid_collisions(float time)
@@ -397,7 +413,10 @@ static void game_start(void)
 static void game_end(void)
 {
     gfx_fade_out();
+
     delete_asteroids();
+    delete_missiles();
+    delete_explosions();
     destroy_scene(&game.scene);
 }
 

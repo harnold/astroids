@@ -43,6 +43,10 @@
 #define POINTS_PER_HIT          100
 #define ENERGY_REFILL_SCORE     10000
 
+#define NUM_FINAL_EXPLOSIONS    200
+#define FINAL_EXPLOSIONS_DELAY  0.05f
+#define DESTROYED_SHIP_TURN     (FLOAT_2PI)
+
 struct gfx_mode_info gfx_mode_info;
 
 static const struct sprite_class font_class = {
@@ -62,6 +66,8 @@ static struct {
     struct elist missiles;
     struct elist explosions;
     struct sprite score_sprites[SCORE_DIGITS];
+    int num_final_explosions;
+    float next_explosion_time;
 } game;
 
 static int frame_of_char(char c)
@@ -375,6 +381,25 @@ static void test_collisions(float time, float dt)
     test_asteroid_ship_collisions(dt);
 }
 
+static void create_final_explosions(float time)
+{
+    if (time < game.next_explosion_time)
+        return;
+
+    struct ship *ship = &game.player_ship;
+
+    float x = ship->x + (frand() - 0.5f) * screen_to_world_dx(ship->ship_sprite.width);
+    float y = ship->y + (frand() - 0.5f) * screen_to_world_dx(ship->ship_sprite.height);
+
+    struct explosion *exp = create_explosion(x, y, SHIP_LAYER, time);
+
+    elist_insert_back(&exp->link, &game.explosions);
+    scene_add_sprite(&game.scene, &exp->sprite);
+
+    ++game.num_final_explosions;
+    game.next_explosion_time += FINAL_EXPLOSIONS_DELAY;
+}
+
 static void game_start(void)
 {
     game.score = 0;
@@ -424,6 +449,7 @@ static unsigned int game_loop(void)
 {
     bool quit = false;
     bool paused = false;
+    bool destroyed = false;
 
     const float start_time = timer_get_time();
     float time = start_time;
@@ -461,10 +487,31 @@ static unsigned int game_loop(void)
             game.energy_refill_score += ENERGY_REFILL_SCORE;
         }
 
-        control_player_ship(time, dt);
-        test_collisions(time, dt);
+        if (!destroyed) {
 
-        create_asteroids(time);
+            if (game.player_ship.energy >= SHIP_MIN_ENERGY) {
+                control_player_ship(time, dt);
+                test_collisions(time, dt);
+                create_asteroids(time);
+            } else {
+                game.num_final_explosions = 0;
+                game.next_explosion_time = time + FINAL_EXPLOSIONS_DELAY;
+                ship_set_shield(&game.player_ship, false);
+                ship_set_power(&game.player_ship, 0);
+                destroyed = true;
+            }
+
+        } else {
+
+            ship_turn(&game.player_ship, dt * DESTROYED_SHIP_TURN);
+
+            if (game.num_final_explosions < NUM_FINAL_EXPLOSIONS)
+                create_final_explosions(time);
+
+            else if (elist_empty(&game.explosions))
+                quit = true;
+        }
+
         update_asteroids(dt);
         update_missiles(dt);
         update_explosions(time, dt);

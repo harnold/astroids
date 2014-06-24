@@ -5,8 +5,11 @@
 #include "elist.h"
 #include "sprite.h"
 
+#define EXPLOSION_FPS           30
+#define EXPLOSION_NUM_FRAMES    10
+#define EXPLOSION_DURATION      ((float) EXPLOSION_NUM_FRAMES / EXPLOSION_FPS)
+
 extern const struct animation explosion_animation;
-extern const float explosion_duration;
 
 struct explosion {
     float x;

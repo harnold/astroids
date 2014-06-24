@@ -5,10 +5,8 @@
 DEFINE_ALLOCATOR(explosion, struct explosion, ALLOC_DEFAULT_BLOB_SIZE);
 
 const struct animation explosion_animation = {
-    ANIM_ONCE_FORWARD, 30, 0, 9
+    ANIM_ONCE_FORWARD, EXPLOSION_FPS, 0, EXPLOSION_NUM_FRAMES - 1
 };
-
-const float explosion_duration = 10.0f / 30.0f;
 
 const struct sprite_class explosion_class = {
     &explosion_image, 32, 32, 10, 16.0f, 16.0f

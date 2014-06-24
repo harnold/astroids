@@ -284,7 +284,7 @@ static void update_explosions(float time, float dt)
 
         struct explosion *exp = explosion_list_get(node);
 
-        if (time - exp->sprite.anim_start_time > explosion_duration)
+        if (time - exp->sprite.anim_start_time > EXPLOSION_DURATION)
             delete_explosion(exp);
     }
 }

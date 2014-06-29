@@ -30,8 +30,11 @@
 #define SCORE_X_POS             3350
 #define SCORE_Y_POS             50
 
-#define GAME_PAUSED_X           100
-#define GAME_PAUSED_Y           50
+#define GAME_PAUSED_X           ((gfx_mode_info.x_resolution - game_paused_image.width) / 2)
+#define GAME_PAUSED_Y           ((gfx_mode_info.y_resolution - game_paused_image.height) / 2)
+#define GAME_OVER_X             ((gfx_mode_info.x_resolution - game_over_image.width) / 2)
+#define GAME_OVER_Y             ((gfx_mode_info.y_resolution - game_over_image.height) / 2)
+#define GAME_OVER_SPEED         3
 
 #define ASTEROIDS_MAX           50
 #define ASTEROID_MIN_DELAY      0.1f
@@ -530,7 +533,22 @@ static unsigned int game_loop(void)
         gfx_draw_back_buffer();
     }
 
-    return game.score;
+    if (destroyed) {
+
+        for (int line = -game_over_image.height; line < GAME_OVER_Y; line += GAME_OVER_SPEED) {
+            gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY);
+            gfx_draw_image(&game_over_image, GAME_OVER_X, line, IMAGE_BLIT_MASK);
+            gfx_draw_back_buffer();
+        }
+
+        while (key_pressed(KEY_ESC) || key_pressed(KEY_SPACE)) { /* wait */ }
+        while (!key_pressed(KEY_ESC) && !key_pressed(KEY_SPACE)) { /* wait */ }
+
+        return game.score;
+
+    } else {
+        return 0;
+    }
 }
 
 int game_init(void)

@@ -59,10 +59,17 @@ static inline float confine_float(float x, float min, float max)
 
 #if defined(__WATCOMC__)
 
-#define PACKED_STRUCT   _Packed struct
+  #define PACKED_STRUCT   _Packed struct
 
-#else
-#error Unsupported compiler
-#endif /* Watcom C */
+#else /* Not Watcom C */
+
+  #define PACKED_STRUCT	struct
+
+  #define _M_IX86
+  #define __386__
+  #define __far
+  #define __interrupt
+
+#endif
 
 #endif

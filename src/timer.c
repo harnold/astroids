@@ -4,6 +4,7 @@
 
 #include <conio.h>
 #include <dos.h>
+#include <i86.h>
 #include <stdbool.h>
 
 #define PIT_SYSTEM_INT      0x08
@@ -35,6 +36,8 @@ static struct {
 
 static void __interrupt timer_handler(union INTPACK regs)
 {
+    UNUSED(regs);
+
     static int bios_counter = 0;
 
     timer.ticks++;

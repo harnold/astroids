@@ -12,32 +12,32 @@ struct dpmi_error {
 };
 
 static const struct dpmi_error dpmi_error_table[] = {
-    0x8001, "Function not supported",
-    0x8002, "Invalid state",
-    0x8003, "System integrity",
-    0x8004, "Deadlock detected",
-    0x8005, "Request cancelled",
-    0x8010, "Resource unavailable",
-    0x8011, "Descriptor unavailable",
-    0x8012, "Linear memory unavailable",
-    0x8013, "Physical memory unavailable",
-    0x8014, "Backing store unavailable",
-    0x8015, "Callback unavailable",
-    0x8016, "Handle unavailable",
-    0x8017, "Lock count exceeded",
-    0x8018, "Resource owned exclusively",
-    0x8019, "Resource owned shared",
-    0x8021, "Invalid value",
-    0x8022, "Invalid selector",
-    0x8023, "Invalid handle",
-    0x8024, "Invalid callback",
-    0x8025, "Invalid linear address",
-    0x8026, "Invalid request"
+    { 0x8001, "Function not supported" },
+    { 0x8002, "Invalid state" },
+    { 0x8003, "System integrity" },
+    { 0x8004, "Deadlock detected" },
+    { 0x8005, "Request cancelled" },
+    { 0x8010, "Resource unavailable" },
+    { 0x8011, "Descriptor unavailable" },
+    { 0x8012, "Linear memory unavailable" },
+    { 0x8013, "Physical memory unavailable" },
+    { 0x8014, "Backing store unavailable" },
+    { 0x8015, "Callback unavailable" },
+    { 0x8016, "Handle unavailable" },
+    { 0x8017, "Lock count exceeded" },
+    { 0x8018, "Resource owned exclusively" },
+    { 0x8019, "Resource owned shared" },
+    { 0x8021, "Invalid value" },
+    { 0x8022, "Invalid selector" },
+    { 0x8023, "Invalid handle" },
+    { 0x8024, "Invalid callback" },
+    { 0x8025, "Invalid linear address" },
+    { 0x8026, "Invalid request" },
 };
 
-static const char *dpmi_error_message(int error_code)
+static const char *dpmi_error_message(unsigned int error_code)
 {
-    const struct dpmi_error *e = &dpmi_error_table;
+    const struct dpmi_error *e = dpmi_error_table;
     const struct dpmi_error *end = e + array_length(dpmi_error_table);
 
     while (e < end) {
@@ -49,7 +49,7 @@ static const char *dpmi_error_message(int error_code)
     return "Unknown error";
 }
 
-static int dpmi_error(int fn, int error_code)
+static int dpmi_error(int fn, unsigned int error_code)
 {
     if (error_code < 0x8000) {
         return error("DPMI function %04Xh failed: DOS error code %d",

@@ -30,26 +30,26 @@ struct image_info {
 };
 
 static const struct palette_info palette_infos[] = {
-    &title_palette, "gfx\\title.pcx",
-    &game_palette, "gfx\\ship.pcx",
-    NULL, NULL
+    { &title_palette, "gfx\\title.pcx" },
+    { &game_palette, "gfx\\ship.pcx" },
+    { NULL, NULL },
 };
 
 static const struct image_info image_infos[] = {
-    &background_image, "gfx\\backgrnd.pcx",
-    &asteroid_big_image, "gfx\\astbig.pcx",
-    &asteroid_mid_image, "gfx\\astmid.pcx",
-    &asteroid_small_image, "gfx\\astsmall.pcx",
-    &explosion_image, "gfx\\explode.pcx",
-    &font_image, "gfx\\font.pcx",
-    &game_over_image, "gfx\\gameover.pcx",
-    &hall_of_fame_image, "gfx\\hall.pcx",
-    &missile_image, "gfx\\missile.pcx",
-    &game_paused_image, "gfx\\pause.pcx",
-    &shield_image, "gfx\\shield.pcx",
-    &ship_image, "gfx\\ship.pcx",
-    &title_image, "gfx\\title.pcx",
-    NULL, NULL
+    { &background_image, "gfx\\backgrnd.pcx" },
+    { &asteroid_big_image, "gfx\\astbig.pcx" },
+    { &asteroid_mid_image, "gfx\\astmid.pcx" },
+    { &asteroid_small_image, "gfx\\astsmall.pcx" },
+    { &explosion_image, "gfx\\explode.pcx" },
+    { &font_image, "gfx\\font.pcx" },
+    { &game_over_image, "gfx\\gameover.pcx" },
+    { &hall_of_fame_image, "gfx\\hall.pcx" },
+    { &missile_image, "gfx\\missile.pcx" },
+    { &game_paused_image, "gfx\\pause.pcx" },
+    { &shield_image, "gfx\\shield.pcx" },
+    { &ship_image, "gfx\\ship.pcx" },
+    { &title_image, "gfx\\title.pcx" },
+    { NULL, NULL },
 };
 
 int res_load_palettes(void)

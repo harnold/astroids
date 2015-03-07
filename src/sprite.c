@@ -58,6 +58,8 @@ void sprite_set_animation(struct sprite *sprite, const struct animation *anim,
 
 void sprite_update(struct sprite *sprite, float t, float dt)
 {
+    UNUSED(dt);
+
     const struct animation *anim = sprite->anim;
 
     if (anim == NULL)

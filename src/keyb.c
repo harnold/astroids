@@ -1,11 +1,14 @@
 #include "keyb.h"
 #include "bitvect.h"
+#include "compat.h"
 #include "dpmi.h"
 #include "error.h"
 #include "xmemcpy.h"
 
 #include <conio.h>
 #include <dos.h>
+#include <i86.h>
+#include <stdint.h>
 #include <string.h>
 
 #define KEYBOARD_INT            0x09
@@ -39,11 +42,12 @@ static void __interrupt key_handler(union INTPACK regs)
     unsigned key_code;
     unsigned key_control;
 
+    UNUSED(regs);
+
     key_code = inp(KEY_BUFFER);
     key_control = inp(KEY_CONTROL);
-    outp(KEY_CONTROL, key_control | 0x80);
-    outp(KEY_CONTROL, key_control & ~0x80);
-    outp(PIC_MASTER_COMMAND, PIC_EOI);
+    outp(KEY_CONTROL, key_control | 0x80u);
+    outp(KEY_CONTROL, key_control & ~0x80u);
 
     if (key_code >= MIN_SCAN_CODE &&
         key_code <= MAX_SCAN_CODE) {

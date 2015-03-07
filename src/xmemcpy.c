@@ -100,7 +100,7 @@ byte_copy:
 
 void *xmemmove(void *dst, const void *src, size_t n)
 {
-    if ((uint8_t *) src + n <= dst || (uint8_t *) dst + n <= src)
+    if ((uint8_t *) src + n <= (uint8_t *) dst || (uint8_t *) dst + n <= (uint8_t *) src)
         return xmemcpy(dst, src, n);
 
     if (src >= dst) {

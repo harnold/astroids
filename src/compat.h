@@ -27,6 +27,8 @@ static inline float confine_float(float x, float min, float max)
 
 #define FLOAT_2PI                       (4 * asin(1.0f))
 
+#define UNUSED(x)			(void) (x)
+
 #ifndef __unique_identifier
 
 #define __concat1(a, b)                 a##b

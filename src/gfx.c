@@ -209,6 +209,29 @@ void gfx_draw_image(const struct image *image, int x, int y, unsigned flags)
     gfx_draw_image_section(image, 0, 0, image->width, image->height, x, y, flags);
 }
 
+static inline int frame_of_char(char c)
+{
+    return (c >= '0' && c <= '9') ? c - '0' :
+           (c >= 'A' && c <= 'Z') ? c - 'A' + 10 : 36;
+}
+
+void gfx_draw_char(const struct sprite_class *font_class, int x, int y,
+                   char c, unsigned flags)
+{
+    gfx_draw_image_section(font_class->image, 0, frame_of_char(c) * font_class->height,
+                           font_class->width, font_class->height, x, y, flags);
+}
+
+void gfx_draw_text(const struct sprite_class *font_class, int x, int y,
+                   const char *text, unsigned flags)
+{
+    for (const char *c = text; *c != '\0'; c++) {
+        gfx_draw_image_section(font_class->image, 0, frame_of_char(*c) * font_class->height,
+                               font_class->width, font_class->height, x, y, flags);
+        x += font_class->width;
+    }
+}
+
 void gfx_draw_sprite(const struct sprite *sprite, unsigned flags)
 {
     gfx_draw_image_section(sprite->image, 0, sprite->frame * sprite->height,

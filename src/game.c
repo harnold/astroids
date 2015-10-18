@@ -572,7 +572,13 @@ void game_exit(void)
 
 void game_run(void)
 {
-    game_start();
-    game_loop();
-    game_end();
+    while (1) {
+
+        if (!run_intro())
+            return;
+
+        game_start();
+        game_loop();
+        game_end();
+    }
 }

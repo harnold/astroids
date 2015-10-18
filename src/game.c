@@ -1,6 +1,7 @@
 #include "game.h"
 #include "asteroid.h"
 #include "compat.h"
+#include "error.h"
 #include "explosion.h"
 #include "keyb.h"
 #include "missile.h"
@@ -11,8 +12,11 @@
 #include "timer.h"
 #include "vga.h"
 #include "world.h"
+#include "xmemcpy.h"
 
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #define SCORE_LAYER             0
 #define SHIP_LAYER              1
@@ -41,6 +45,8 @@
 #define ASTEROID_FRAGMENTS      4
 
 #define PLAYER_NAME_MAX         16
+#define NUM_HIGHSCORE_ENTRIES   10
+#define HIGHSCORE_FILE_NAME     "astrohi.dat"
 
 #define TIME_PER_LEVEL          10
 #define POINTS_PER_HIT          100
@@ -50,14 +56,45 @@
 #define FINAL_EXPLOSIONS_DELAY  0.05f
 #define DESTROYED_SHIP_TURN     (FLOAT_2PI)
 
+#define INTRO_TITLE_DELAY       5f
+#define INTRO_HIGHSCORE_DELAY   5f
+
+#define BEGIN_TIMED(duration) \
+    { \
+        float _time = timer_get_time(); \
+        const float _end_time = _time + duration; \
+        while (_time < _end_time) {
+
+#define END_TIMED \
+            _time = timer_get_time(); \
+        } \
+    }
+
 struct gfx_mode_info gfx_mode_info;
+
+struct highscore_entry {
+    unsigned int score;
+    const char player_name[PLAYER_NAME_MAX + 1];
+};
+
+static const struct highscore_entry default_highscores[NUM_HIGHSCORE_ENTRIES] = {
+    { 10000, "   WELCOME TO   " },
+    {  9000, "    ASTROIDS    " },
+    {  8000, "                " },
+    {  7000, "   A GAME BY    " },
+    {  6000, "                " },
+    {  5000, " HOLGER ARNOLD  " },
+    {  4000, "                " },
+    {  3000, "   CREATED IN   " },
+    {  2000, "      1997      " },
+    {  1000, "                " },
+};
 
 static const struct sprite_class font_class = {
     &font_image, 8, 8, 37, 0.0f, 0.0f
 };
 
 static struct {
-    char name[PLAYER_NAME_MAX];
     unsigned int score;
     unsigned int energy_refill_score;
     unsigned int level;
@@ -70,16 +107,130 @@ static struct {
     struct elist explosions;
     int num_final_explosions;
     float next_explosion_time;
+    struct highscore_entry highscores[NUM_HIGHSCORE_ENTRIES];
 } game;
+
+static void number_to_text(unsigned num, int digits, char *text)
+{
+    text[digits] = '\0';
+
+    for (int i = digits - 1, shifter = 1; i >= 0; i--, shifter *= 10)
+        text[i] = (num / shifter) % 10 + '0';
+}
+
+static void init_highscores(void)
+{
+    xmemcpy(&game.highscores, default_highscores, sizeof(game.highscores));
+}
+
+static int load_highscores(void)
+{
+    FILE *file;
+
+    if (!(file = fopen(HIGHSCORE_FILE_NAME, "rb")))
+        return error_errno("Opening file '%s' failed", HIGHSCORE_FILE_NAME);
+
+    if (fread(&game.highscores, sizeof(game.highscores), 1, file) != 1) {
+        error_errno("Reading highscore data from file '%s' failed", HIGHSCORE_FILE_NAME);
+        fclose(file);
+        return -1;
+    }
+
+    fclose(file);
+    return 0;
+}
+
+static int save_highscores(void)
+{
+    FILE *file;
+
+    if (!(file = fopen(HIGHSCORE_FILE_NAME, "wb")))
+        return error_errno("Opening file '%s' failed", HIGHSCORE_FILE_NAME);
+
+    if (fwrite(&game.highscores, sizeof(game.highscores), 1, file) != 1) {
+        error_errno("Writing highscore data to file '%s' failed", HIGHSCORE_FILE_NAME);
+        fclose(file);
+        return -1;
+    }
+
+    fclose(file);
+    return 0;
+}
+
+static void draw_title_screen(void)
+{
+    vga_set_black_palette();
+    gfx_draw_image(&title_image, 0, 0, IMAGE_BLIT_COPY);
+    gfx_draw_back_buffer();
+    gfx_fade_in(&title_palette);
+}
+
+static void draw_highscores(void)
+{
+    vga_set_black_palette();
+    gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY);
+
+    const int line_width = (PLAYER_NAME_MAX + SCORE_DIGITS + 1) * font_class.width;
+    const int line_height = (int) (font_class.height * 1.5);
+    const int xpos = (gfx_mode_info.x_resolution - line_width) / 2;
+
+    int ypos = (gfx_mode_info.y_resolution - NUM_HIGHSCORE_ENTRIES * line_height) / 2;
+
+    for (int i = 0; i < NUM_HIGHSCORE_ENTRIES; i++) {
+
+        char line[SCORE_DIGITS + 1 + PLAYER_NAME_MAX + 1];
+
+        number_to_text(game.highscores[i].score, SCORE_DIGITS, line);
+        strcpy(&line[SCORE_DIGITS], " ");
+        strncpy(&line[SCORE_DIGITS + 1] , game.highscores[i].player_name, PLAYER_NAME_MAX);
+        line[sizeof(line) - 1] = '\0';
+
+        gfx_draw_text(&font_class, xpos, ypos, line, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+        ypos += line_height;
+    }
+
+    gfx_draw_back_buffer();
+    gfx_fade_in(&game_palette);
+}
+
+static bool run_intro(void)
+{
+    bool finished = false;
+    bool exit = false;
+    int screen = 0;
+
+    while (!finished) {
+
+        if (screen == 0) {
+            draw_title_screen();
+        } else {
+            draw_highscores();
+        }
+
+        screen = 1 - screen;
+
+        BEGIN_TIMED(5)
+            if (key_pressed(KEY_ESC) || key_pressed(KEY_Q)) {
+                exit = true;
+                finished = true;
+                break;
+            } else if (key_pressed(KEY_SPACE) || key_pressed(KEY_ENTER)) {
+                finished = true;
+                break;
+            }
+        END_TIMED
+
+        gfx_fade_out();
+    }
+
+    return !exit;
+}
 
 static void update_score_display(void)
 {
     char score_text[SCORE_DIGITS + 1];
 
-    score_text[SCORE_DIGITS] = '\0';
-
-    for (int i = SCORE_DIGITS - 1, shifter = 1; i >= 0; i--, shifter *= 10)
-        score_text[i] = (game.score / shifter) % 10 + '0';
+    number_to_text(game.score, SCORE_DIGITS, score_text);
 
     int x = world_to_screen_x(SCORE_X_POS);
     int y = world_to_screen_y(SCORE_Y_POS);
@@ -92,7 +243,6 @@ static void update_energy_display(void)
 {
     unsigned x = world_to_screen_x(ENERGY_X_POS);
     unsigned y = world_to_screen_y(ENERGY_Y_POS);
-    unsigned w_full = world_to_screen_dx(ENERGY_WIDTH);
     unsigned w = world_to_screen_dx(game.player_ship.energy * ENERGY_WIDTH);
     unsigned h = world_to_screen_dy(ENERGY_HEIGHT);
 
@@ -297,6 +447,8 @@ static void delete_missiles(void)
 static void update_explosions(float time, float dt)
 {
     struct elist_node *node, *tmp;
+
+    UNUSED(dt);
 
     elist_for_each_node_safe(node, tmp, &game.explosions) {
 
@@ -556,6 +708,10 @@ int game_init(void)
 
     gfx_get_mode_info(&gfx_mode_info);
 
+    if (load_highscores() != 0) {
+        init_highscores();
+    }
+
     return 0;
 }
 
@@ -568,6 +724,8 @@ void game_exit(void)
     explosion_cleanup();
     scene_cleanup();
     sprite_cleanup();
+
+    save_highscores();
 }
 
 void game_run(void)

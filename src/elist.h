@@ -108,8 +108,8 @@ static inline void elist_move(struct elist_node *node, struct elist_node *next)
     elist_insert(node, next);
 }
 
-void elist_splice(struct elist_node *begin, struct elist_node *end,
-                  struct elist_node *next)
+static inline void elist_splice(struct elist_node *begin, struct elist_node *end,
+                                struct elist_node *next)
 {
     if (begin == end)
         return;

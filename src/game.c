@@ -68,23 +68,24 @@ static struct {
     float last_asteroid_time;
     struct elist missiles;
     struct elist explosions;
-    struct sprite score_sprites[SCORE_DIGITS];
     int num_final_explosions;
     float next_explosion_time;
 } game;
 
-static int frame_of_char(char c)
+static void update_score_display(void)
 {
-    return (c >= '0' && c <= '9') ? c - '0' :
-           (c >= 'A' && c <= 'Z') ? c - 'A' + 10 :
-           (c == ' ') ? 36 : -1;
-}
+    char score_text[SCORE_DIGITS + 1];
 
-static void update_number_display(struct sprite sprites[], int num_digits,
-                                  unsigned int value)
-{
-    for (int i = num_digits - 1, shifter = 1; i >= 0; i--, shifter *= 10)
-        sprites[i].frame = frame_of_char('0' + (value / shifter) % 10);
+    score_text[SCORE_DIGITS] = '\0';
+
+    for (int i = SCORE_DIGITS - 1, shifter = 1; i >= 0; i--, shifter *= 10)
+        score_text[i] = (game.score / shifter) % 10 + '0';
+
+    int x = world_to_screen_x(SCORE_X_POS);
+    int y = world_to_screen_y(SCORE_Y_POS);
+
+    gfx_draw_text(&font_class, x, y, score_text, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+    scene_add_damage_rect(&game.scene, x, y, SCORE_DIGITS * font_class.width, font_class.height);
 }
 
 static void update_energy_display(void)
@@ -343,7 +344,6 @@ static void test_missile_asteroid_collisions(float time)
 
         if (asteroid_hit) {
             game.score += POINTS_PER_HIT << (unsigned) ast->type;
-            update_number_display(&game.score_sprites, SCORE_DIGITS, game.score);
             blow_up_asteroid(ast, time, &new_asteroids);
         }
     }
@@ -420,14 +420,6 @@ static void game_start(void)
     init_elist(&game.asteroids);
     init_elist(&game.missiles);
     init_elist(&game.explosions);
-
-    for (int i = 0; i < SCORE_DIGITS; i++) {
-        init_sprite(&game.score_sprites[i], &font_class,
-                    world_to_screen_x(SCORE_X_POS) + i * font_class.width,
-                    world_to_screen_y(SCORE_Y_POS),
-                    SCORE_LAYER, 0.0f);
-        scene_add_sprite(&game.scene, &game.score_sprites[i]);
-    }
 
     vga_set_black_palette();
     scene_draw(&game.scene);
@@ -523,6 +515,7 @@ static unsigned int game_loop(void)
         scene_update(&game.scene, time, dt);
         scene_draw(&game.scene);
         update_energy_display();
+        update_score_display();
 
         if (paused) {
             scene_overlay_image(&game.scene, &game_paused_image,

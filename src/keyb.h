@@ -2,6 +2,7 @@
 #define KEYB_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 enum key_code {
     KEY_NONE = 0,
@@ -110,7 +111,7 @@ enum modifier_keys {
 
 int keyboard_init(void);
 void keyboard_exit(void);
-bool key_pressed(unsigned key_code);
+bool key_pressed(uint8_t key_code);
 unsigned key_modifiers(void);
 
 #endif

@@ -112,7 +112,7 @@ void keyboard_exit(void)
     _enable();
 }
 
-bool key_pressed(unsigned key_code)
+bool key_pressed(uint8_t key_code)
 {
     return vbitvect_test_bit(keyboard.key_vector, key_code);
 }

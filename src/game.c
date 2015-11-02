@@ -56,8 +56,9 @@
 #define FINAL_EXPLOSIONS_DELAY  0.05f
 #define DESTROYED_SHIP_TURN     (FLOAT_2PI)
 
-#define INTRO_TITLE_DELAY       5f
-#define INTRO_HIGHSCORE_DELAY   5f
+#define INTRO_TITLE_DELAY       5.0f
+#define INTRO_HIGHSCORE_DELAY   5.0f
+#define HIGHSCORE_SPEED         1
 
 #define BEGIN_TIMED(duration) \
     { \
@@ -69,6 +70,13 @@
             _time = timer_get_time(); \
         } \
     }
+
+enum intro_state {
+    INTRO_SHOW_TITLE,
+    INTRO_SHOW_HIGHSCORES,
+    INTRO_START_GAME,
+    INTRO_EXIT_GAME
+};
 
 struct gfx_mode_info gfx_mode_info;
 
@@ -157,73 +165,127 @@ static int save_highscores(void)
     return 0;
 }
 
-static void draw_title_screen(void)
+static int show_title_screen(void)
 {
+    const uint8_t start_game_keys[] = { KEY_SPACE, KEY_ENTER };
+    const uint8_t exit_game_keys[] = { KEY_ESC, KEY_Q };
+
     vga_set_black_palette();
     gfx_draw_image(&title_image, 0, 0, IMAGE_BLIT_COPY);
     gfx_draw_back_buffer();
     gfx_fade_in(&title_palette);
+
+    int next = INTRO_SHOW_HIGHSCORES;
+
+    BEGIN_TIMED(INTRO_TITLE_DELAY)
+        if (any_key_pressed(start_game_keys, array_length(start_game_keys))) {
+            next = INTRO_START_GAME;
+            break;
+        } else if (any_key_pressed(exit_game_keys, array_length(exit_game_keys))) {
+            next = INTRO_EXIT_GAME;
+            break;
+        }
+    END_TIMED
+
+    gfx_fade_out();
+
+    return next;
 }
 
-static void draw_highscores(void)
+static void prepare_highscore_entries(char *lines)
 {
+    const int line_chars = SCORE_DIGITS + 1 + PLAYER_NAME_MAX + 1;
+    char *line = lines;
+
+    for (int i = 0; i < NUM_HIGHSCORE_ENTRIES; i++, line += line_chars) {
+        number_to_text(game.highscores[i].score, SCORE_DIGITS, line);
+        strcpy(&line[SCORE_DIGITS], " ");
+        strncpy(&line[SCORE_DIGITS + 1] , game.highscores[i].player_name, PLAYER_NAME_MAX);
+        line[line_chars - 1] = '\0';
+    }
+}
+
+static void draw_highscore_entries(char *lines, int xpos, int ypos, int line_height)
+{
+    const int line_chars = SCORE_DIGITS + 1 + PLAYER_NAME_MAX + 1;
+    char *line = lines;
+
+    for (int i = 0; i < NUM_HIGHSCORE_ENTRIES; i++, line += line_chars) {
+        gfx_draw_text(&font_class, xpos, ypos, line, IMAGE_BLIT_MASK);
+        ypos += line_height;
+    }
+}
+
+static int show_highscores(void)
+{
+    const uint8_t start_game_keys[] = { KEY_SPACE, KEY_ENTER };
+    const uint8_t exit_game_keys[] = { KEY_ESC, KEY_Q };
+
     vga_set_black_palette();
-    gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY);
+    gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY | GFX_NO_CLIPPING);
+    gfx_draw_image(&hall_of_fame_image, 0, 0, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+    gfx_draw_back_buffer();
+    gfx_fade_in(&game_palette);
+
+    int next = INTRO_SHOW_TITLE;
 
     const int line_width = (PLAYER_NAME_MAX + SCORE_DIGITS + 1) * font_class.width;
     const int line_height = (int) (font_class.height * 1.5);
     const int xpos = (gfx_mode_info.x_resolution - line_width) / 2;
+    const int yend = hall_of_fame_image.height;
 
-    int ypos = (gfx_mode_info.y_resolution - NUM_HIGHSCORE_ENTRIES * line_height) / 2;
+    char lines[NUM_HIGHSCORE_ENTRIES * (SCORE_DIGITS + 1 + PLAYER_NAME_MAX + 1)];
 
-    for (int i = 0; i < NUM_HIGHSCORE_ENTRIES; i++) {
+    prepare_highscore_entries(lines);
 
-        char line[SCORE_DIGITS + 1 + PLAYER_NAME_MAX + 1];
+    for (int ypos = gfx_mode_info.y_resolution; ypos >= yend; ypos -= HIGHSCORE_SPEED) {
 
-        number_to_text(game.highscores[i].score, SCORE_DIGITS, line);
-        strcpy(&line[SCORE_DIGITS], " ");
-        strncpy(&line[SCORE_DIGITS + 1] , game.highscores[i].player_name, PLAYER_NAME_MAX);
-        line[sizeof(line) - 1] = '\0';
+        gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY | GFX_NO_CLIPPING);
+        gfx_draw_image(&hall_of_fame_image, 0, 0, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+        draw_highscore_entries(lines, xpos, ypos, line_height);
+        gfx_draw_back_buffer();
 
-        gfx_draw_text(&font_class, xpos, ypos, line, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
-        ypos += line_height;
+        if (any_key_pressed(start_game_keys, array_length(start_game_keys))) {
+            next = INTRO_START_GAME;
+            break;
+        } else if (any_key_pressed(exit_game_keys, array_length(exit_game_keys))) {
+            next = INTRO_EXIT_GAME;
+            break;
+        }
     }
 
-    gfx_draw_back_buffer();
-    gfx_fade_in(&game_palette);
+    BEGIN_TIMED(INTRO_HIGHSCORE_DELAY)
+        if (any_key_pressed(start_game_keys, array_length(start_game_keys))) {
+            next = INTRO_START_GAME;
+            break;
+        } else if (any_key_pressed(exit_game_keys, array_length(exit_game_keys))) {
+            next = INTRO_EXIT_GAME;
+            break;
+        }
+    END_TIMED
+
+    gfx_fade_out();
+
+    return next;
 }
 
-static bool run_intro(void)
+static int run_intro(void)
 {
-    bool finished = false;
-    bool exit = false;
-    int screen = 0;
+    int state = INTRO_SHOW_TITLE;
 
-    while (!finished) {
-
-        if (screen == 0) {
-            draw_title_screen();
-        } else {
-            draw_highscores();
+    while (1) {
+        switch (state) {
+        case INTRO_SHOW_TITLE:
+            state = show_title_screen();
+            break;
+        case INTRO_SHOW_HIGHSCORES:
+            state = show_highscores();
+            break;
+        case INTRO_EXIT_GAME:
+        case INTRO_START_GAME:
+            return state;
         }
-
-        screen = 1 - screen;
-
-        BEGIN_TIMED(5)
-            if (key_pressed(KEY_ESC) || key_pressed(KEY_Q)) {
-                exit = true;
-                finished = true;
-                break;
-            } else if (key_pressed(KEY_SPACE) || key_pressed(KEY_ENTER)) {
-                finished = true;
-                break;
-            }
-        END_TIMED
-
-        gfx_fade_out();
     }
-
-    return !exit;
 }
 
 static void update_score_display(void)
@@ -594,6 +656,9 @@ static void game_end(void)
 
 static unsigned int game_loop(void)
 {
+    const uint8_t pause_end_keys[] = { KEY_ESC, KEY_P, KEY_SPACE };
+    const uint8_t game_end_keys[] = { KEY_ESC, KEY_Q, KEY_SPACE };
+
     bool quit = false;
     bool paused = false;
     bool destroyed = false;
@@ -609,8 +674,8 @@ static unsigned int game_loop(void)
 
         if (paused) {
             while (key_pressed(KEY_P)) { /* wait */ }
-            while (!key_pressed(KEY_ESC) && !key_pressed(KEY_P)) { /* wait */ }
-            while (key_pressed(KEY_ESC) || key_pressed(KEY_P)) { /* wait */ }
+            while (!any_key_pressed(pause_end_keys, array_length(pause_end_keys))) { /* wait */ }
+            while (any_key_pressed(pause_end_keys, array_length(pause_end_keys))) { /* wait */ }
             paused = false;
             timer_get_time_delta();
         }
@@ -670,8 +735,11 @@ static unsigned int game_loop(void)
         update_score_display();
 
         if (paused) {
+            const int game_paused_x = (gfx_mode_info.x_resolution - game_paused_image.width) / 2;
+            const int game_paused_y = (gfx_mode_info.y_resolution - game_paused_image.height) / 2;
+
             scene_overlay_image(&game.scene, &game_paused_image,
-                                GAME_PAUSED_X, GAME_PAUSED_Y,
+                                game_paused_x, game_paused_y,
                                 IMAGE_BLIT_MASK);
         }
 
@@ -680,14 +748,17 @@ static unsigned int game_loop(void)
 
     if (destroyed) {
 
-        for (int line = -game_over_image.height; line < GAME_OVER_Y; line += GAME_OVER_SPEED) {
-            gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY);
-            gfx_draw_image(&game_over_image, GAME_OVER_X, line, IMAGE_BLIT_MASK);
+        const int game_over_x = (gfx_mode_info.x_resolution - game_over_image.width) / 2;
+        const int game_over_y = (gfx_mode_info.y_resolution - game_over_image.height) / 2;
+
+        for (int line = -game_over_image.height; line < game_over_y; line += GAME_OVER_SPEED) {
+            gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY | GFX_NO_CLIPPING);
+            gfx_draw_image(&game_over_image, game_over_x, line, IMAGE_BLIT_MASK);
             gfx_draw_back_buffer();
         }
 
-        while (key_pressed(KEY_ESC) || key_pressed(KEY_SPACE)) { /* wait */ }
-        while (!key_pressed(KEY_ESC) && !key_pressed(KEY_SPACE)) { /* wait */ }
+        while (!any_key_pressed(game_end_keys, array_length(game_end_keys))) { /* wait */ }
+        while (any_key_pressed(game_end_keys, array_length(game_end_keys))) { /* wait */ }
 
         return game.score;
 
@@ -732,7 +803,7 @@ void game_run(void)
 {
     while (1) {
 
-        if (!run_intro())
+        if (run_intro() == INTRO_EXIT_GAME)
             return;
 
         game_start();

@@ -22,6 +22,7 @@ OBJS = &
     palette.obj &
     pcx.obj &
     res.obj &
+    ringbuf.obj &
     scene.obj &
     ship.obj &
     sprite.obj &

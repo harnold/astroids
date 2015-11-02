@@ -117,6 +117,16 @@ bool key_pressed(uint8_t key_code)
     return vbitvect_test_bit(keyboard.key_vector, key_code);
 }
 
+bool any_key_pressed(const uint8_t *key_codes, size_t n)
+{
+    for (size_t i = 0; i < n; i++, key_codes++) {
+        if (key_pressed(*key_codes))
+            return true;
+    }
+
+    return false;
+}
+
 unsigned key_modifiers(void)
 {
     return keyboard.modifiers;

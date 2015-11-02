@@ -74,8 +74,6 @@ enum key_code {
     KEY_F8 = 66,
     KEY_F9 = 67,
     KEY_F10 = 68,
-    KEY_F11 = 87,
-    KEY_F12 = 88,
     KEY_NUMLOCK = 69,
     KEY_SCROLLLOCK = 70,
     KEY_HOME = 71,
@@ -100,7 +98,9 @@ enum key_code {
     KEY_KP_2 = 80,
     KEY_KP_3 = 81,
     KEY_KP_0 = 82,
-    KEY_KP_DELETE = 83
+    KEY_KP_DELETE = 83,
+    KEY_F11 = 87,
+    KEY_F12 = 88,
 };
 
 enum modifier_keys {
@@ -112,6 +112,7 @@ enum modifier_keys {
 int keyboard_init(void);
 void keyboard_exit(void);
 bool key_pressed(uint8_t key_code);
+bool any_key_pressed(const uint8_t *key_codes, size_t n);
 unsigned key_modifiers(void);
 
 #endif

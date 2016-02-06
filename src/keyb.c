@@ -28,7 +28,7 @@
 
 #define INPUT_BUFFER_SIZE       32
 
-typedef void __interrupt (*key_handler_t)(void);
+typedef void __interrupt (*key_handler_t)();
 
 static int ascii_table_us[] = {
     -1,         /* KEY_NONE = 0, */

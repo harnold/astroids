@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define REFRESH_RATE_TEST_CYCLES	30
 #define MAX_REFRESH_RATE                100.0f
@@ -230,6 +231,14 @@ void gfx_draw_text(const struct sprite_class *font_class, int x, int y,
                                font_class->width, font_class->height, x, y, flags);
         x += font_class->width;
     }
+}
+
+void gfx_draw_text_centered(const struct sprite_class *font_class, int y,
+                            const char *text, unsigned flags)
+{
+    const int line_width = strlen(text) * font_class->width;
+
+    gfx_draw_text(font_class, (gfx.mode_info.x_resolution - line_width) / 2, y, text, flags);
 }
 
 void gfx_draw_sprite(const struct sprite *sprite, unsigned flags)

@@ -40,6 +40,8 @@ void gfx_draw_char(const struct sprite_class *font_class, int x, int y,
                    char c, unsigned flags);
 void gfx_draw_text(const struct sprite_class *font_class, int x, int y,
                    const char *text, unsigned flags);
+void gfx_draw_text_centered(const struct sprite_class *font_class, int y,
+                            const char *text, unsigned flags);
 void gfx_draw_sprite(const struct sprite *sprite, unsigned flags);
 bool gfx_sprite_visible(const struct sprite *sprite);
 void gfx_fade_out(void);

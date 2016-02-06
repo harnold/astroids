@@ -32,7 +32,7 @@ typedef void __interrupt (*key_handler_t)();
 
 static int ascii_table_us[] = {
     -1,         /* KEY_NONE = 0, */
-    '\e',       /* KEY_ESC = 1, */
+    '\x1B',     /* KEY_ESC = 1, */
     '1',        /* KEY_1 = 2, */
     '2',        /* KEY_2 = 3, */
     '3',        /* KEY_3 = 4, */
@@ -134,7 +134,7 @@ static int ascii_table_us[] = {
 
 static int ascii_table_us_shift[] = {
     -1,         /* KEY_NONE = 0, */
-    '\e',       /* KEY_ESC = 1, */
+    '\x1B',     /* KEY_ESC = 1, */
     '!',        /* KEY_1 = 2, */
     '@',        /* KEY_2 = 3, */
     '#',        /* KEY_3 = 4, */

@@ -83,7 +83,7 @@ struct gfx_mode_info gfx_mode_info;
 
 struct highscore_entry {
     unsigned int score;
-    const char player_name[PLAYER_NAME_MAX + 1];
+    char player_name[PLAYER_NAME_MAX + 1];
 };
 
 static const struct highscore_entry default_highscores[NUM_HIGHSCORE_ENTRIES] = {
@@ -287,6 +287,80 @@ static int run_intro(void)
             return state;
         }
     }
+}
+
+static const char *get_player_name(void)
+{
+    static char player_name[PLAYER_NAME_MAX + 1];
+
+    const int line_width = PLAYER_NAME_MAX * font_class.width;
+    const int line_height = font_class.height;
+    const int xpos = (gfx_mode_info.x_resolution - line_width) / 2;
+    int ypos = (gfx_mode_info.y_resolution - 3 * line_height) / 2;
+
+    vga_set_black_palette();
+    gfx_draw_image(&background_image, 0, 0, IMAGE_BLIT_COPY | GFX_NO_CLIPPING);
+    gfx_draw_image(&hall_of_fame_image, 0, 0, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+    gfx_draw_text_centered(&font_class, ypos, "ENTER YOUR NAME",
+                           IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+    gfx_draw_back_buffer();
+    gfx_fade_in(&game_palette);
+
+    ypos += 2 * line_height;
+
+    bool finished = false;
+    int i = 0;
+
+    keyboard_clear_input_buffer();
+
+    while (!finished) {
+
+        int ch = keyboard_get_char_wait();
+
+        if ((ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || (ch == ' ')) {
+            if (i < PLAYER_NAME_MAX)
+                player_name[i++] = (char) ch;
+        } else if (ch >= 'a' && ch <= 'z') {
+            if (i < PLAYER_NAME_MAX)
+                player_name[i++] = (char) (ch + 'A' - 'a');
+        } else if (ch == '\b') {
+            if (i > 0)
+                --i;
+        } else if (ch == '\r') {
+            finished = true;
+        }
+
+        player_name[i] = '\0';
+
+        gfx_draw_image_section(&background_image, xpos, ypos, line_width, line_height,
+                               xpos, ypos, IMAGE_BLIT_COPY | GFX_NO_CLIPPING);
+        gfx_draw_text_centered(&font_class, ypos, player_name, IMAGE_BLIT_MASK | GFX_NO_CLIPPING);
+        gfx_draw_back_buffer();
+    }
+
+    gfx_fade_out();
+
+    return player_name;
+}
+
+static void update_highscores()
+{
+    if (game.score <= game.highscores[NUM_HIGHSCORE_ENTRIES - 1].score)
+        return;
+
+    const char *player_name = get_player_name();
+
+    int i = 0;
+    struct highscore_entry *entry = game.highscores;
+
+    while (game.score <= entry->score) {
+        ++entry;
+        ++i;
+    }
+
+    xmemmove(entry + 1, entry, (NUM_HIGHSCORE_ENTRIES - i - 1) * sizeof(struct highscore_entry));
+    entry->score = game.score;
+    strncpy(entry->player_name, player_name, PLAYER_NAME_MAX + 1);
 }
 
 static void update_score_display(void)
@@ -655,7 +729,7 @@ static void game_end(void)
     destroy_scene(&game.scene);
 }
 
-static unsigned int game_loop(void)
+static void game_loop(void)
 {
     const uint8_t pause_end_keys[] = { KEY_ESC, KEY_P, KEY_SPACE };
     const uint8_t game_end_keys[] = { KEY_ESC, KEY_Q, KEY_SPACE };
@@ -765,10 +839,9 @@ static unsigned int game_loop(void)
                 break;
         END_TIMED
 
-        return game.score;
-
     } else {
-        return 0;
+
+        game.score = 0;
     }
 }
 
@@ -814,5 +887,7 @@ void game_run(void)
         game_start();
         game_loop();
         game_end();
+
+        update_highscores();
     }
 }

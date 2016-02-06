@@ -39,6 +39,7 @@
 #define GAME_OVER_X             ((gfx_mode_info.x_resolution - game_over_image.width) / 2)
 #define GAME_OVER_Y             ((gfx_mode_info.y_resolution - game_over_image.height) / 2)
 #define GAME_OVER_SPEED         3
+#define GAME_OVER_DELAY         5.0f
 
 #define ASTEROIDS_MAX           50
 #define ASTEROID_MIN_DELAY      0.1f
@@ -52,7 +53,7 @@
 #define POINTS_PER_HIT          100
 #define ENERGY_REFILL_SCORE     10000
 
-#define NUM_FINAL_EXPLOSIONS    200
+#define NUM_FINAL_EXPLOSIONS    100
 #define FINAL_EXPLOSIONS_DELAY  0.05f
 #define DESTROYED_SHIP_TURN     (FLOAT_2PI)
 
@@ -757,8 +758,12 @@ static unsigned int game_loop(void)
             gfx_draw_back_buffer();
         }
 
-        while (!any_key_pressed(game_end_keys, array_length(game_end_keys))) { /* wait */ }
         while (any_key_pressed(game_end_keys, array_length(game_end_keys))) { /* wait */ }
+
+        BEGIN_TIMED(GAME_OVER_DELAY)
+            if (any_key_pressed(game_end_keys, array_length(game_end_keys)))
+                break;
+        END_TIMED
 
         return game.score;
 
